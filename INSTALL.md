@@ -36,7 +36,7 @@ your system configuration.
    Rust Engine's converter at a fixed version, and writes the skater, animations and physics
    settings to `skate-data/`. This takes a few minutes.
 4. **Converts Skate 3 sounds** into `skate-audio/` (rolling, pops, landings, grinds). It
-   downloads vgmstream to decode them. If this fails, skating still works, just silently.
+   downloads vgmstream to decode them (on macOS it installs it with Homebrew). If this fails, skating still works, just silently.
 5. **Sets up the local server** ([vmangos](https://github.com/vmangos/core) through
    [vmangos-deploy](https://github.com/mserajnik/vmangos-deploy)) in `server/`, and extracts
    map data from your WoW client. **The extraction takes several hours** and uses a couple of CPU

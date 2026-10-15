@@ -27,8 +27,6 @@ ENGINE_URL=https://github.com/SK8-ENGINE/skate-3-rust-engine
 ENGINE_REV=cb79689
 CONVERTER_URL=https://raw.githubusercontent.com/Kimmo3223/2010-rust-rewrite-mashup/adb684e78ec07654f00e2a9da88d32ae02cc68bd/skate/converter/iw4l_skate_convert.py
 VGMSTREAM_URL=https://github.com/vgmstream/vgmstream/releases/download/r2117/vgmstream-linux.zip
-[ "$(uname -s)" = Darwin ] &&
-    VGMSTREAM_URL=https://github.com/vgmstream/vgmstream/releases/download/r2117/vgmstream-mac.zip
 SERVER_URL=https://github.com/mserajnik/vmangos-deploy
 SERVER_REV=e9ba3fad0161ff277d5adfbc5b66e6b8114cb18b
 # vmangos-deploy's images by digest: their tags follow the deploy repo's latest version, and an
@@ -176,7 +174,11 @@ fi
 if [ ! -f "$ROOT/skate-audio/pop_1.wav" ]; then
     step "Converting Skate 3 sounds"
     need_skate
-    if ! command -v vgmstream-cli >/dev/null; then
+    (vgmstream-cli -V) >/dev/null 2>&1 || { rm -f "$STATE/bin/vgmstream-cli"; hash -r; }
+    # vgmstream's macOS release links the Homebrew ffmpeg of its build day; Homebrew's bottle tracks the installed one.
+    if [ "$(uname -s)" = Darwin ]; then
+        command -v vgmstream-cli >/dev/null || brew install vgmstream || true
+    elif ! command -v vgmstream-cli >/dev/null; then
         curl -fsSL "$VGMSTREAM_URL" -o "$STATE/vgmstream.zip"
         python3 -c "import zipfile,sys; zipfile.ZipFile(sys.argv[1]).extractall(sys.argv[2])" "$STATE/vgmstream.zip" "$STATE/bin"
         chmod +x "$STATE/bin/vgmstream-cli"
