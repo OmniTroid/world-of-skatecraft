@@ -273,10 +273,28 @@ pub(super) struct SwimFrame {
     pub pitch: f32,
 }
 
+/// The unit travel direction and the pitch to present for it. The basis is `0x7c5880`'s: forward
+/// is the facing pitched by the swim pitch and strafe stays level; 1.12 has no vertical input.
+///
+/// Deviation, GM flight only: `climb` (+1 rise, −1 sink) adds a vertical stroke, and the presented
+/// pitch tilts onto the climbed direction so the wire's pitched axis carries it to observers
+/// (BACKWARD flies that axis negated).
+fn travel(basis: (Vec3, Vec3), pitch: f32, (fwd, side): (f32, f32), climb: f32) -> (Vec3, f32) {
+    let (sp, cp) = pitch.sin_cos();
+    let fwd_axis = basis.0 * cp + Vec3::Y * sp;
+    let dir = (fwd_axis * fwd + basis.1 * side + Vec3::Y * climb).normalize_or_zero();
+    if climb == 0.0 || dir == Vec3::ZERO {
+        return (dir, pitch);
+    }
+    let up = dir.y.clamp(-1.0, 1.0).asin();
+    (dir, if fwd < 0.0 { -up } else { up })
+}
+
 /// One swimming frame: the drunk pitch wobble, the pitched travel basis, the directional speed,
 /// the stroke rate and [`swim_step`]. `basis` is the level `(forward, right)` pair, `amounts` the
-/// netted `(fwd, side)` translation ([`translate_amounts`]), and `wobble` the drunk angle, zero
-/// when it must not apply.
+/// netted `(fwd, side)` translation ([`translate_amounts`]), `climb` the GM-flight vertical
+/// ([`travel`]), and `wobble` the drunk angle, zero when it must not apply.
+#[allow(clippy::too_many_arguments)]
 pub(super) fn drive_step(
     player: &mut Player,
     time: &Time,
@@ -286,11 +304,12 @@ pub(super) fn drive_step(
     surface_y: Option<f32>,
     basis: (Vec3, Vec3),
     amounts: (f32, f32),
+    climb: f32,
     speeds: Option<benilla_protocol::MoveSpeeds>,
     move_speed: &super::MoveSpeed,
     wobble: f32,
 ) -> SwimFrame {
-    let (swim_fwd, swim_side) = amounts;
+    let swim_fwd = amounts.0;
     // Drunk and swimming, the pitch wobbles too, by the facing veer's angle × 4.0 each frame
     // (`0x60aabc`-`0x60ab0a`, `[0x80306c]`, committed through `0x60de70`), clamped to ±π/2
     // (`0x60aba0`, `0x808acc`/`0x80c5e4`), not the mouselook's ±89°.
@@ -298,13 +317,7 @@ pub(super) fn drive_step(
         player.mover_pitch = (player.mover_pitch + wobble * super::drunk::SWIM_PITCH_WOBBLE_SCALE)
             .clamp(-std::f32::consts::FRAC_PI_2, std::f32::consts::FRAC_PI_2);
     }
-    let mut pitch = player.mover_pitch;
-    // The travel basis (`0x7c5880`): forward is the facing pitched by the swim pitch, strafe stays
-    // level, and there is no vertical input; Space's one swim role is the jump.
-    let (sp, cp) = player.mover_pitch.sin_cos();
-    let fwd_axis = basis.0 * cp + Vec3::Y * sp;
-    let v = fwd_axis * swim_fwd + basis.1 * swim_side;
-    let dir3 = v.normalize_or_zero();
+    let (dir3, mut pitch) = travel(basis, player.mover_pitch, amounts, climb);
     let rest_line = rest_line(player, surface_y);
     // The directional speed (`0x7c4c90`'s swim arm): backward takes `min(swimBack, swim)`,
     // forward and strafe the swim speed.
@@ -487,6 +500,45 @@ mod tests {
             !update_swimming(&mut p, None, 0.0),
             "no liquid over the feet stops swimming (the binary's inLiquid == 0 → STOP)"
         );
+    }
+
+    const LEVEL: (Vec3, Vec3) = (Vec3::NEG_Z, Vec3::X);
+
+    fn close(a: f32, b: f32) -> bool {
+        (a - b).abs() < 1.0e-5
+    }
+
+    #[test]
+    fn without_a_climb_the_travel_is_the_pitched_basis_and_the_aim_is_kept() {
+        let (dir, pitch) = travel(LEVEL, 0.3, (1.0, 0.0), 0.0);
+        assert!(close(dir.y, 0.3_f32.sin()) && close(pitch, 0.3));
+        let (dir, pitch) = travel(LEVEL, 0.3, (0.0, 1.0), 0.0);
+        assert_eq!(dir, Vec3::X, "strafe stays level");
+        assert!(close(pitch, 0.3));
+    }
+
+    #[test]
+    fn a_climb_alone_flies_straight_up_or_down_on_a_vertical_pitch() {
+        let (dir, pitch) = travel(LEVEL, 0.3, (0.0, 0.0), 1.0);
+        assert_eq!(dir, Vec3::Y);
+        assert!(close(pitch, std::f32::consts::FRAC_PI_2));
+        let (dir, pitch) = travel(LEVEL, 0.0, (0.0, 0.0), -1.0);
+        assert_eq!(dir, Vec3::NEG_Y);
+        assert!(close(pitch, -std::f32::consts::FRAC_PI_2));
+    }
+
+    #[test]
+    fn a_climb_tilts_the_wire_axis_onto_the_travel_both_ways() {
+        // Forward at a level aim plus a rise: 45° up, and FORWARD's pitched axis is that.
+        let (dir, pitch) = travel(LEVEL, 0.0, (1.0, 0.0), 1.0);
+        assert!(close(dir.y, std::f32::consts::FRAC_1_SQRT_2));
+        assert!(close(pitch, std::f32::consts::FRAC_PI_4));
+        // Backward plus a rise: BACKWARD flies −(f·cos p + Y·sin p), so p must be −45° to rise.
+        let (dir, pitch) = travel(LEVEL, 0.0, (-1.0, 0.0), 1.0);
+        let (sp, cp) = pitch.sin_cos();
+        let backward_axis = -(LEVEL.0 * cp + Vec3::Y * sp);
+        assert!(close(pitch, -std::f32::consts::FRAC_PI_4));
+        assert!(backward_axis.distance(dir) < 1.0e-5);
     }
 
     #[test]

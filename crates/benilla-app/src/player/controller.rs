@@ -568,9 +568,19 @@ pub(super) fn control(
             wow_to_bevy([c * xy, sn * xy, -k.launch.zspeed])
         });
 
+        // Deviation, GM flight only (`.gm fly on` sets LEVITATING with SWIMMING): the jump key
+        // rises and the sit key sinks while held, so Space no longer breaches out of the flight.
+        let flying = swimming && player.modes.levitating;
+        let climb = if flying && may_translate {
+            let held = |command| f32::from(u8::from(binds.command_held(command)));
+            held("JUMP") - held("SITORSTAND")
+        } else {
+            0.0
+        };
+
         // A knockback sets FALLING, which excludes SWIMMING; it brings its own launch, so the land
         // mover flies it, not `breach_step`.
-        let breach = swimming && (want_jump && !player.modes.hover || wire_jump);
+        let breach = swimming && (want_jump && !player.modes.hover && !flying || wire_jump);
         let knock_breach = swimming && knock_launch.is_some();
         if breach || knock_breach {
             player.swimming = false;
@@ -582,6 +592,12 @@ pub(super) fn control(
             swim::translate_amounts(&axes, !may_translate)
         } else {
             (0.0, 0.0)
+        };
+        // A pure climb streams as FORWARD on the climb's pitch, the axis observers extrapolate.
+        let flag_amounts = if climb != 0.0 && swim_fwd == 0.0 && swim_side == 0.0 {
+            (1.0, 0.0)
+        } else {
+            (swim_fwd, swim_side)
         };
 
         // The mounted Space flourish, the jump-key handler `0x60dea0`: mounted, still and grounded
@@ -636,6 +652,7 @@ pub(super) fn control(
                 surface_y,
                 (move_fwd, move_right),
                 (swim_fwd, swim_side),
+                climb,
                 mover_speeds,
                 move_speed,
                 if translating { drunk_wobble } else { 0.0 },
@@ -697,7 +714,7 @@ pub(super) fn control(
         } = flags::this_frame(
             &mut player,
             &axes,
-            swimming.then_some((swim_fwd, swim_side)),
+            swimming.then_some(flag_amounts),
             airborne,
             jumped,
             held,
