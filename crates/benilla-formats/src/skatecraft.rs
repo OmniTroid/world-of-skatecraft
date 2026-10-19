@@ -111,6 +111,11 @@ const SPELLS: [SkateSpell; 5] = [
 ];
 
 /// `bytes` as read for `name`, with our rows appended when `name` is one of the patched tables.
+/// Whether `id` is one of the skate spells appended to `Spell.dbc`, not a stock 1.12 row.
+pub fn is_skate_spell(id: u32) -> bool {
+    SPELLS.iter().any(|s| s.id == id)
+}
+
 pub(crate) fn patch(name: &str, bytes: Vec<u8>) -> Vec<u8> {
     let key = name.replace('/', "\\").to_ascii_lowercase();
     let rows = match key.as_str() {
