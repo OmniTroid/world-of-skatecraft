@@ -314,17 +314,17 @@ pub(super) fn install(lua: &Lua) -> mlua::Result<()> {
                         Value::String(lua.create_string(&e.name)?),
                         Value::Nil, // isHeader
                         Value::Nil, // isExpanded
-                        Value::Integer(rank),
-                        Value::Integer(0),                       // numTempPoints
-                        Value::Integer(i64::from(e.temp_bonus)), // skillModifier: temp only
-                        Value::Integer(max),
+                        crate::script::lua_int(rank),
+                        Value::Integer(0), // numTempPoints
+                        crate::script::lua_int(i64::from(e.temp_bonus)), // skillModifier: temp only
+                        crate::script::lua_int(max),
                         binding_abi::flag(e.abandonable), // isAbandonable
                         // stepCost, rankCost: nil, since Lua reads `0` as true.
                         Value::Nil,
                         Value::Nil,
-                        Value::Integer(i64::from(e.min_level)), // minLevel
+                        crate::script::lua_int(i64::from(e.min_level)), // minLevel
                         // skillCostType: the cost index plus one (`0x4d3a06`).
-                        Value::Integer(i64::from(e.cost_index) + 1),
+                        crate::script::lua_int(i64::from(e.cost_index) + 1),
                         Value::String(lua.create_string(&e.description)?), // skillDescription
                     ]))
                 }

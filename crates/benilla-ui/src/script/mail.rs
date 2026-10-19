@@ -315,11 +315,11 @@ pub(super) fn install(lua: &Lua) -> mlua::Result<()> {
                 opt_str(&r.stationery_icon)?,
                 opt_str(&r.sender)?,
                 Value::String(lua.create_string(&r.subject)?),
-                Value::Integer(i64::from(r.money)),
-                Value::Integer(i64::from(r.cod)),
+                crate::script::lua_int(i64::from(r.money)),
+                crate::script::lua_int(i64::from(r.cod)),
                 Value::Number(f64::from(r.days_left)),
                 if r.item_count > 0 {
-                    Value::Integer(i64::from(r.item_count))
+                    crate::script::lua_int(i64::from(r.item_count))
                 } else {
                     Value::Nil
                 },
@@ -395,10 +395,10 @@ pub(super) fn install(lua: &Lua) -> mlua::Result<()> {
                 Value::String(lua.create_string(if inv.seller { "seller" } else { "buyer" })?),
                 Value::String(lua.create_string(&inv.item_name)?),
                 Value::String(lua.create_string(&inv.player_name)?),
-                Value::Integer(i64::from(inv.bid)),
-                Value::Integer(i64::from(inv.buyout)),
-                Value::Integer(i64::from(inv.deposit)),
-                Value::Integer(i64::from(inv.consignment)),
+                crate::script::lua_int(i64::from(inv.bid)),
+                crate::script::lua_int(i64::from(inv.buyout)),
+                crate::script::lua_int(i64::from(inv.deposit)),
+                crate::script::lua_int(i64::from(inv.consignment)),
             ]))
         })?,
     )?;
@@ -435,11 +435,11 @@ pub(super) fn install(lua: &Lua) -> mlua::Result<()> {
                 None => Value::Nil,
             };
             // A number on every path, as in `GetSendMailItem`.
-            let quality = Value::Integer(i64::from(r.item_quality.unwrap_or(0)));
+            let quality = crate::script::lua_int(i64::from(r.item_quality.unwrap_or(0)));
             Ok(MultiValue::from_vec(vec![
                 name,
                 texture,
-                Value::Integer(i64::from(r.item_count.max(1))),
+                crate::script::lua_int(i64::from(r.item_count.max(1))),
                 quality,
                 flag(usable),
             ]))
@@ -628,11 +628,11 @@ pub(super) fn install(lua: &Lua) -> mlua::Result<()> {
                 None => Value::Nil,
             };
             // A number on every path, as in the reference.
-            let quality = Value::Integer(i64::from(it.quality.unwrap_or(0)));
+            let quality = crate::script::lua_int(i64::from(it.quality.unwrap_or(0)));
             Ok(MultiValue::from_vec(vec![
                 name,
                 texture,
-                Value::Integer(i64::from(count)),
+                crate::script::lua_int(i64::from(count)),
                 quality,
             ]))
         })?,
@@ -693,7 +693,7 @@ pub(super) fn install(lua: &Lua) -> mlua::Result<()> {
                 Value::String(lua.create_string(&row.name)?),
                 Value::String(lua.create_string(&row.icon)?),
                 row.cost
-                    .map_or(Value::Nil, |c| Value::Integer(i64::from(c))),
+                    .map_or(Value::Nil, |c| crate::script::lua_int(i64::from(c))),
             ]))
         })?,
     )?;
@@ -776,7 +776,7 @@ pub(super) fn install(lua: &Lua) -> mlua::Result<()> {
                 Some(row) => MultiValue::from_vec(vec![
                     Value::String(lua.create_string(&row.name)?),
                     Value::String(lua.create_string(&row.icon)?),
-                    Value::Integer(i64::from(row.cost)),
+                    crate::script::lua_int(i64::from(row.cost)),
                 ]),
                 None => MultiValue::from_vec(vec![Value::Nil, Value::Nil, Value::Integer(0)]),
             })

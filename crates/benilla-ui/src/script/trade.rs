@@ -188,7 +188,7 @@ pub(super) fn install(lua: &Lua) -> mlua::Result<()> {
             Ok(MultiValue::from_vec(vec![
                 opt_str(&s.name)?,
                 opt_str(&s.texture)?,
-                Value::Integer(i64::from(s.count.max(1))),
+                crate::script::lua_int(i64::from(s.count.max(1))),
                 flag(usable),
                 opt_str(&s.enchantment)?,
             ]))
@@ -242,13 +242,13 @@ pub(super) fn install(lua: &Lua) -> mlua::Result<()> {
                 })
             };
             let quality = match s.quality {
-                Some(q) => Value::Integer(i64::from(q)),
+                Some(q) => crate::script::lua_int(i64::from(q)),
                 None => Value::Nil,
             };
             Ok(MultiValue::from_vec(vec![
                 opt_str(&s.name)?,
                 opt_str(&s.texture)?,
-                Value::Integer(i64::from(s.count.max(1))),
+                crate::script::lua_int(i64::from(s.count.max(1))),
                 quality,
                 flag(usable),
                 opt_str(&s.enchantment)?,

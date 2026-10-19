@@ -4,7 +4,8 @@
 
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
-use std::time::{Duration, Instant};
+use std::time::Duration;
+use web_time::Instant;
 
 use benilla_formats::{load_item_display_catalog, open_chain, CharSections, NpcAppearance};
 use benilla_protocol::ObjectFields;

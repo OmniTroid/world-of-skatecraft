@@ -1,7 +1,8 @@
 //! `--swap-pack-slots`: `CMSG_SWAP_INV_ITEM` swaps two 1-based backpack slots, then swaps them
 //! back so the character is left as found.
 
-use std::time::{Duration, Instant};
+use std::time::Duration;
+use web_time::Instant;
 
 use anyhow::{bail, Context, Result};
 use benilla_protocol::{decode, SessionEvent};

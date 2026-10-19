@@ -12,7 +12,6 @@
 //! Every allocation sized from a header count or a sector length is capped by the file's size, so
 //! a lying header fails with [`Error::Corrupt`].
 
-use std::fs::File;
 use std::io::{self, Read, Seek, SeekFrom};
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
@@ -20,7 +19,9 @@ use std::sync::Arc;
 use benilla_bytes::{capped, ByteExt};
 
 mod crypto;
+pub mod fs;
 use crypto::{decrypt_block, hash_string, hash_type};
+use fs::File;
 
 /// `MPQ\x1A` as a little-endian `u32`: the archive header signature.
 const SIGNATURE: u32 = 0x1A51_504D;
@@ -126,7 +127,7 @@ impl Archive {
     pub fn open(path: impl AsRef<Path>) -> Result<Self> {
         let path = path.as_ref().to_path_buf();
         let mut file = File::open(&path)?;
-        let file_len = file.metadata()?.len();
+        let file_len = fs::len(&file)?;
 
         let archive_offset = find_header(&mut file, file_len)?;
 
@@ -231,7 +232,7 @@ impl Archive {
         let compressed = block.flags & (FLAG_COMPRESS | FLAG_IMPLODE) != 0;
         let implode_only = block.flags & FLAG_IMPLODE != 0 && block.flags & FLAG_COMPRESS == 0;
 
-        let file_len = file.metadata()?.len();
+        let file_len = fs::len(&file)?;
         let avail = avail_from(file_len, file_pos);
 
         let mut open = ArchiveFile {

@@ -1,7 +1,7 @@
-# benilla's `kira` fork — what differs from upstream, and how to check
+# benilla's `kira` fork: what differs from upstream, and how to check
 
 Upstream: [`tesselode/kira`](https://github.com/tesselode/kira), MIT OR Apache-2.0, version
-`0.12.4` — the version the workspace lock resolves to. Wired in through `[patch.crates-io]` in
+`0.12.4`: the version the workspace lock resolves to. Wired in through `[patch.crates-io]` in
 the workspace root, the way `lua-src` is. The crate is copied from the cargo registry as
 published (`src/`, `Cargo.toml`, `README.md`) plus the two licence files from the repository;
 upstream files are CRLF and are left so, except the two files patched, which are LF.
@@ -18,29 +18,29 @@ sooner than both.
 ## Why a fork exists at all
 
 The mixer runs on benilla's own audio render thread (`sound/output`), and with a raid buffing
-itself — a dozen live voices, most of them spatial — that thread cost **~1.5 ms of every 60 Hz
+itself: a dozen live voices, most of them spatial: that thread cost **~1.5 ms of every 60 Hz
 frame** on an M2 Air (a sampled profile with a dozen spatial voices playing, `Track::process`
 two thirds of it). Upstream's sub-track `process` spatializes **every
 frame**: two vector normalizes, a length, the attenuation curve and a dB→amplitude `powf` per
 frame per spatial track, then two more `powf`s per frame for the volume tween and the fade. At
 48 kHz × 12 tracks that is ~1.7 M `powf`s a second plus the vector math, for gains that change
-imperceptibly across a 10 ms chunk. FMOD 3 — the mixer the real client delegates to — updates
+imperceptibly across a 10 ms chunk. FMOD 3: the mixer the real client delegates to: updates
 pan and attenuation per mixer update, not per sample.
 
-## Patch 1 — `src/track/sub.rs`
+## Patch 1: `src/track/sub.rs`
 
 `Track::process` evaluates the spatial gains (attenuation, left/right ear gain, the mono fold)
 and the volume × fade amplitude at the chunk's two ends and interpolates them linearly across
 the chunk. `SpatialData::spatial_gains` is `spatialize` factored into a value; `spatialize`
 itself is kept, unused, so the factoring can be diffed against it. A chunk is the output
-device's buffer — 512 frames, ~10.7 ms, `sound/output::DEVICE_BUFFER_FRAMES`.
+device's buffer: 512 frames, ~10.7 ms, `sound/output::DEVICE_BUFFER_FRAMES`.
 
 What changes audibly: nothing a listener can name. A source crossing an ear's axis within one
 chunk pans linearly in gain over 10 ms instead of following the dot product per sample; a
 volume tween ramps linearly in amplitude across each chunk instead of in decibels. Both are
 below the granularity the reference itself updates at.
 
-## Patch 2 — `src/sound/streaming/decoder/symphonia.rs`
+## Patch 2: `src/sound/streaming/decoder/symphonia.rs`
 
 `SymphoniaDecoder::decode` returns an error at the end of the packets, as 0.12.1 did on
 symphonia 0.5, where 0.12.4 returns an empty chunk. `DecodeScheduler::frame_at_index` decodes
@@ -49,6 +49,12 @@ it loops on empty chunks forever: the sound never ends and its decode thread spi
 process exits, even after the sound is stopped. symphonia 0.6 estimates the length of an MP3
 without a Xing header from its first frames, and over-counts one of the install's tracks,
 `ZulGurubVooDoo.mp3`, by one frame. With the error the sound stops where its packets end.
+
+## Patch 3: `src/sound.rs`
+
+Upstream compiles `streaming` out on `wasm32`, since its decoder runs on a thread. benilla's web
+build keeps the module, and `src/sound/streaming/sound/decode_scheduler.rs` spawns that decoder
+with `wasm_thread` there, a web worker over the shared memory; native keeps `std::thread`.
 
 ## How to check
 

@@ -5,7 +5,7 @@
 //! and on the SpineLow torso-masked overlay while moving, seated or airborne in combat
 //! (`0x5fe2f0`). Death overrides everything.
 
-use std::time::Instant;
+use web_time::Instant;
 
 use benilla_assets::{AnimClip, ModelAnimations};
 use benilla_formats::AnimDataCatalog;

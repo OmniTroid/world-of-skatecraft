@@ -569,12 +569,12 @@ pub(super) fn install(lua: &Lua) -> mlua::Result<()> {
                     Some(p) => Value::String(lua.create_string(p.as_str())?),
                     None => Value::Nil,
                 },
-                Value::Integer(i64::from(s.count)),
+                crate::script::lua_int(i64::from(s.count)),
                 // A held item's source slot reads locked, derived from the cursor so the app's
                 // re-push cannot wipe it.
                 Value::Boolean(s.locked || held_here),
                 match s.quality {
-                    Some(q) => Value::Integer(i64::from(q)),
+                    Some(q) => crate::script::lua_int(i64::from(q)),
                     None => Value::Nil,
                 },
                 Value::Boolean(s.readable),

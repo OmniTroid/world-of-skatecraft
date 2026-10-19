@@ -378,7 +378,7 @@ pub(super) fn install(lua: &Lua) -> mlua::Result<()> {
             let model = lua.app_data_ref::<Model>().expect("model app_data");
             let s = &model.pet_bar.stats;
             let happiness = match s.happiness.filter(|_| s.hunter_pet) {
-                Some(b) => Value::Integer(i64::from(b)),
+                Some(b) => crate::script::lua_int(i64::from(b)),
                 None => Value::Nil,
             };
             let (dmg, rate) = if happiness == Value::Nil {

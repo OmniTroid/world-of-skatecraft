@@ -1,4 +1,4 @@
-use std::net::{TcpStream, ToSocketAddrs};
+use crate::net::TcpStream;
 
 use anyhow::{anyhow, bail, Context, Result};
 use benilla_srp::vanilla_header::{HeaderCrypto, ProofSeed};
@@ -76,7 +76,7 @@ pub struct WorldSession {
 impl WorldSession {
     /// Connect and complete the auth handshake with the logon's account and session key.
     pub fn connect(
-        addr: impl ToSocketAddrs,
+        addr: &str,
         username: &str,
         session_key: [u8; SESSION_KEY_LENGTH],
     ) -> Result<Self> {
@@ -87,13 +87,13 @@ impl WorldSession {
     /// Deviation: checked per queue packet where the reference checks each tick, so a cancel can
     /// lag one server update.
     pub fn connect_queued(
-        addr: impl ToSocketAddrs,
+        addr: &str,
         username: &str,
         session_key: [u8; SESSION_KEY_LENGTH],
         on_queue: &mut dyn FnMut(Option<u32>) -> bool,
     ) -> Result<Self> {
         let mut queued = false;
-        let mut stream = TcpStream::connect(addr).context("connecting to world server")?;
+        let mut stream = crate::net::connect(addr).context("connecting to world server")?;
         // Nagle off: the reference sets `TCP_NODELAY` on its game socket (`0x5bca60`).
         stream
             .set_nodelay(true)
@@ -785,9 +785,9 @@ impl WorldSession {
     /// Log out to character select, waiting up to `timeout`; needs a socket read timeout.
     pub fn logout(&mut self, timeout: std::time::Duration) -> Result<()> {
         self.send(opcode::CMSG_LOGOUT_REQUEST, &[])?;
-        let deadline = std::time::Instant::now() + timeout;
+        let deadline = web_time::Instant::now() + timeout;
         let mut denied = false;
-        while std::time::Instant::now() < deadline {
+        while web_time::Instant::now() < deadline {
             match self.recv() {
                 Ok(ServerPacket::LogoutComplete) => return Ok(()),
                 Ok(ServerPacket::LogoutResponse { reason, .. }) => {

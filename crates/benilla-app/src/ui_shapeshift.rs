@@ -12,7 +12,7 @@
 //! aura holds a slot, warrior stances included) and `SPELL_UPDATE_COOLDOWN`, so the feed runs
 //! before both; a cooldown's expiry fires nothing.
 
-use std::time::Instant;
+use web_time::Instant;
 
 use bevy::prelude::*;
 

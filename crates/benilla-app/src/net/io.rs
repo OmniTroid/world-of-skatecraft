@@ -14,8 +14,13 @@
 
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::{Arc, Mutex};
+#[cfg(not(target_arch = "wasm32"))]
 use std::thread;
-use std::time::{Duration, Instant};
+// The web build's threads are web workers.
+use std::time::Duration;
+#[cfg(target_arch = "wasm32")]
+use wasm_thread as thread;
+use web_time::Instant;
 
 use anyhow::{anyhow, Result};
 use benilla_assets::LockRecover;
@@ -40,8 +45,8 @@ fn note_inbound() {
 
 /// Wall-clock unix ms, the clock two processes' traces share (the trace header's `t0`).
 fn unix_ms() -> u64 {
-    std::time::SystemTime::now()
-        .duration_since(std::time::UNIX_EPOCH)
+    web_time::SystemTime::now()
+        .duration_since(web_time::UNIX_EPOCH)
         .map_or(0, |d| d.as_millis() as u64)
 }
 
@@ -1490,7 +1495,7 @@ mod cycle_tests;
 #[cfg(test)]
 mod rtt_tests {
     use super::{PingClock, RTT_RING};
-    use std::time::Instant;
+    use web_time::Instant;
 
     /// Arms the clock as the write thread does.
     fn sent(clock: &mut PingClock, sequence: u32) {

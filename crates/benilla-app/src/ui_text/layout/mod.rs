@@ -699,7 +699,7 @@ mod ellipsis_cost {
     use super::*;
     use crate::ui_text::engine::test_engine;
     use std::cell::Cell;
-    use std::time::Instant;
+    use web_time::Instant;
 
     /// vmangos `page_text` 2676 verbatim, the Alliance Military Ranks plaque in Stormwind's Old
     /// Town (`GameObject` 3011): HTML, 647 bytes.

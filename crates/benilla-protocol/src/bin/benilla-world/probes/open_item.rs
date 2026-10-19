@@ -3,7 +3,8 @@
 //! and the server answers `SMSG_LOOT_RESPONSE` on the item's own guid. Adds a clam, opens it,
 //! releases the window and removes the clam.
 
-use std::time::{Duration, Instant};
+use std::time::Duration;
+use web_time::Instant;
 
 use anyhow::{Context, Result};
 use benilla_protocol::{decode, SessionEvent};

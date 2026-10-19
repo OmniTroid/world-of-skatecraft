@@ -9,7 +9,7 @@
 //! tool never reads red: the reference's `hasTool` for a focus is the literal 1.0 (`0x4ffa8b`),
 //! as the client holds no focus id or radius, and the server's refusal is the only feedback.
 
-use std::time::Instant;
+use web_time::Instant;
 
 use bevy::prelude::*;
 

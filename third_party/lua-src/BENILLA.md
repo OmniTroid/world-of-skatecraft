@@ -73,6 +73,20 @@ diff -r third_party/lua-src/lua-5.1.5 \
 
 That must print exactly the eight hunks in the tables above and nothing else.
 
+## The web target
+
+`src/lib.rs` also builds for `wasm32-unknown-unknown`, which upstream refuses. It needs
+[wasi-sdk](https://github.com/WebAssembly/wasi-sdk) and the newer wasm exception instructions
+(exnref) in the browser:
+
+```sh
+W=/path/to/wasi-sdk
+CC_wasm32_unknown_unknown=$W/bin/clang AR_wasm32_unknown_unknown=$W/bin/llvm-ar \
+  WASI_SYSROOT=$W/share/wasi-sysroot cargo build --target wasm32-unknown-unknown
+```
+
+The module then imports a few `wasi_snapshot_preview1` functions, which the page provides.
+
 ## The generic-for, in detail
 
 The `lvm.c` comment carries the three details that are the client's own, each byte-read there: the

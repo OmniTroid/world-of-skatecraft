@@ -259,8 +259,8 @@ mod tests {
 
     /// Land until `key` is done, or give up after two seconds.
     fn land_until(c: &mut SkinComposites, images: &mut Assets<Image>, key: SkinKey) {
-        let deadline = std::time::Instant::now() + std::time::Duration::from_secs(2);
-        while c.running.contains_key(&key) && std::time::Instant::now() < deadline {
+        let deadline = web_time::Instant::now() + std::time::Duration::from_secs(2);
+        while c.running.contains_key(&key) && web_time::Instant::now() < deadline {
             c.land(images);
             std::thread::yield_now();
         }

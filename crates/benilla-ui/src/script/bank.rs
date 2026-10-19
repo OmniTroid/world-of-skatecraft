@@ -58,7 +58,7 @@ pub(super) fn install(lua: &Lua) -> mlua::Result<()> {
                 Value::Nil
             };
             Ok(MultiValue::from_vec(vec![
-                Value::Integer(i64::from(n)),
+                crate::script::lua_int(i64::from(n)),
                 full,
             ]))
         })?,

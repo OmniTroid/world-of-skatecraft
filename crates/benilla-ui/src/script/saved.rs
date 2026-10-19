@@ -149,7 +149,7 @@ fn table(t: &Table, depth: usize, seen: &mut HashSet<*const c_void>) -> Option<V
             continue; // an unserializable entry drops, like the reference's
         };
         match k {
-            Value::Integer(i) => ints.push((i, value)),
+            Value::Integer(i) => ints.push((crate::script::int_of(i), value)),
             // A float key that is integral is the same slot as the integer in Lua 5.1.
             Value::Number(n) if n.fract() == 0.0 => ints.push((n as i64, value)),
             Value::String(s) => strs.push((s.as_bytes().to_vec(), value)),

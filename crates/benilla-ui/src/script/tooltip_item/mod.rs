@@ -429,7 +429,7 @@ pub(super) fn install_methods(lua: &Lua, m: &Table) -> mlua::Result<()> {
                     } else {
                         Value::Nil
                     },
-                    Value::Integer(i64::from(repair_cost)),
+                    crate::script::lua_int(i64::from(repair_cost)),
                 ]))
             },
         )?,
@@ -525,7 +525,7 @@ pub(super) fn install_methods(lua: &Lua, m: &Table) -> mlua::Result<()> {
             Ok(MultiValue::from_vec(vec![
                 // The builder's `[ebp-0x38]`: a running cooldown or the item's duration line.
                 Value::Boolean(has_cd || inst.duration_ms.is_some()),
-                Value::Integer(i64::from(repair_cost)),
+                crate::script::lua_int(i64::from(repair_cost)),
             ]))
         })?,
     )?;

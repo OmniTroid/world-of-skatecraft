@@ -28,7 +28,7 @@ pub(crate) fn auditing() -> bool {
 /// `WOW_FEED_GATE_TRACE=1`: at most once a second per feed, prints which inputs hold it open.
 pub(crate) fn trace(feed: &'static str, inputs: &[(&str, bool)]) {
     use std::sync::Mutex;
-    use std::time::Instant;
+    use web_time::Instant;
     static ON: std::sync::OnceLock<bool> = std::sync::OnceLock::new();
     if !*ON.get_or_init(|| std::env::var_os("WOW_FEED_GATE_TRACE").is_some_and(|v| v != "0")) {
         return;

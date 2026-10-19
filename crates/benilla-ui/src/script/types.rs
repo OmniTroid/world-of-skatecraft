@@ -18,7 +18,7 @@ impl ScriptValue {
         Ok(match self {
             ScriptValue::Nil => Value::Nil,
             ScriptValue::Bool(b) => Value::Boolean(b),
-            ScriptValue::Int(i) => Value::Integer(i),
+            ScriptValue::Int(i) => crate::script::lua_int(i),
             ScriptValue::Number(n) => Value::Number(n),
             ScriptValue::Str(s) => Value::String(lua.create_string(&s)?),
         })

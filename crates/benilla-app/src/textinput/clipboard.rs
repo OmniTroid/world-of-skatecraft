@@ -19,6 +19,7 @@ trait Pasteboard {
     fn name(&self) -> &'static str;
 }
 
+#[cfg(not(target_arch = "wasm32"))]
 impl Pasteboard for arboard::Clipboard {
     fn read_text(&mut self) -> Result<Option<String>, String> {
         // `ContentNotAvailable` is arboard's empty clipboard, not a failure.
@@ -107,6 +108,23 @@ fn open_wayland(_display: *mut c_void) -> Box<dyn Pasteboard> {
     unreachable!("wayland_display() only yields Some on Wayland-capable platforms")
 }
 
+#[cfg(not(target_arch = "wasm32"))]
+fn open_os() -> Option<Box<dyn Pasteboard>> {
+    match arboard::Clipboard::new() {
+        Ok(clipboard) => Some(Box::new(clipboard)),
+        Err(e) => {
+            warn!("clipboard: unavailable: {e}{}", session_note());
+            None
+        }
+    }
+}
+
+/// The web build has no pasteboard yet.
+#[cfg(target_arch = "wasm32")]
+fn open_os() -> Option<Box<dyn Pasteboard>> {
+    None
+}
+
 /// The session's display-server variables, appended to the clipboard log lines, since a Linux
 /// paste failure depends on them.
 fn session_note() -> String {
@@ -139,13 +157,7 @@ impl HostClipboard {
         self.opened = true;
         self.backend = match wl_display {
             Some(display) => Some(open_wayland(display)),
-            None => match arboard::Clipboard::new() {
-                Ok(clipboard) => Some(Box::new(clipboard)),
-                Err(e) => {
-                    warn!("clipboard: unavailable — {e}{}", session_note());
-                    None
-                }
-            },
+            None => open_os(),
         };
         if let Some(backend) = &self.backend {
             info!("clipboard: {}{}", backend.name(), session_note());
@@ -160,7 +172,7 @@ impl HostClipboard {
             Ok(text) => text,
             Err(e) => {
                 warn!(
-                    "clipboard: read failed via {} — {e}{}",
+                    "clipboard: read failed via {}: {e}{}",
                     backend.name(),
                     session_note()
                 );
@@ -177,7 +189,7 @@ impl HostClipboard {
         };
         if let Err(e) = backend.write_text(text) {
             warn!(
-                "clipboard: write failed via {} — {e}{}",
+                "clipboard: write failed via {}: {e}{}",
                 backend.name(),
                 session_note()
             );

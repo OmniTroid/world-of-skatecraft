@@ -34,8 +34,8 @@ pub(in crate::script) fn install(lua: &Lua) -> mlua::Result<()> {
             };
             Ok(MultiValue::from_vec(vec![
                 Value::String(lua.create_string(&name)?),
-                Value::Integer(i64::from(rank)),
-                Value::Integer(i64::from(max_rank)),
+                crate::script::lua_int(i64::from(rank)),
+                crate::script::lua_int(i64::from(max_rank)),
             ]))
         })?,
     )?;
@@ -142,7 +142,7 @@ pub(in crate::script) fn install(lua: &Lua) -> mlua::Result<()> {
                     Ok(MultiValue::from_vec(vec![
                         Value::String(lua.create_string(&r.name)?),
                         Value::String(lua.create_string(r.difficulty.as_str())?),
-                        Value::Integer(i64::from(r.num_available)),
+                        crate::script::lua_int(i64::from(r.num_available)),
                         Value::Nil,
                     ]))
                 }
@@ -208,8 +208,8 @@ pub(in crate::script) fn install(lua: &Lua) -> mlua::Result<()> {
             let (min_made, max_made) =
                 recipe_at(&model, index).map_or((0, 0), |r| (r.min_made, r.max_made));
             Ok(MultiValue::from_vec(vec![
-                Value::Integer(i64::from(min_made)),
-                Value::Integer(i64::from(max_made)),
+                crate::script::lua_int(i64::from(min_made)),
+                crate::script::lua_int(i64::from(max_made)),
             ]))
         })?,
     )?;
@@ -222,7 +222,7 @@ pub(in crate::script) fn install(lua: &Lua) -> mlua::Result<()> {
             let model = lua.app_data_ref::<Model>().expect("model app_data");
             Ok(
                 match recipe_at(&model, index).and_then(|r| r.cooldown_secs) {
-                    Some(secs) => Value::Integer(secs as i64),
+                    Some(secs) => crate::script::lua_int(secs as i64),
                     None => Value::Nil,
                 },
             )
@@ -251,8 +251,8 @@ pub(in crate::script) fn install(lua: &Lua) -> mlua::Result<()> {
             Ok(MultiValue::from_vec(vec![
                 opt_str(lua, reagent.name.as_ref())?,
                 opt_str(lua, reagent.icon.as_ref())?,
-                Value::Integer(i64::from(reagent.need)),
-                Value::Integer(i64::from(reagent.have)),
+                crate::script::lua_int(i64::from(reagent.need)),
+                crate::script::lua_int(i64::from(reagent.have)),
             ]))
         })?,
     )?;

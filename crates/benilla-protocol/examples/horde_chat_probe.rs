@@ -76,8 +76,8 @@ fn main() -> Result<()> {
     let mut say_echoed = false;
     let mut system_reply = false;
     let mut notified: Option<String> = None;
-    let deadline = std::time::Instant::now() + std::time::Duration::from_secs(10);
-    while std::time::Instant::now() < deadline && !(say_echoed && system_reply) {
+    let deadline = web_time::Instant::now() + std::time::Duration::from_secs(10);
+    while web_time::Instant::now() < deadline && !(say_echoed && system_reply) {
         match session.recv() {
             Ok(ServerPacket::MessageChat(m)) => {
                 println!(
@@ -107,8 +107,8 @@ fn main() -> Result<()> {
     let (mut reader, mut writer) = session.into_split()?;
     writer.send_chat("orcish writer line")?;
     let mut writer_echoed = false;
-    let deadline = std::time::Instant::now() + std::time::Duration::from_secs(10);
-    while std::time::Instant::now() < deadline && !writer_echoed {
+    let deadline = web_time::Instant::now() + std::time::Duration::from_secs(10);
+    while web_time::Instant::now() < deadline && !writer_echoed {
         match reader.recv() {
             Ok(ServerPacket::MessageChat(m)) if m.text == "orcish writer line" => {
                 writer_echoed = true;

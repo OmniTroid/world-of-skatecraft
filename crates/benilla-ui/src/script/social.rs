@@ -129,7 +129,7 @@ pub(super) fn install(lua: &Lua) -> mlua::Result<()> {
             };
             Ok((
                 Value::String(lua.create_string(&friend.name)?),
-                Value::Integer(i64::from(friend.level)),
+                crate::script::lua_int(i64::from(friend.level)),
                 Value::String(lua.create_string(&friend.class)?),
                 Value::String(lua.create_string(&friend.area)?),
                 if friend.connected {
@@ -392,7 +392,7 @@ pub(super) fn install(lua: &Lua) -> mlua::Result<()> {
             Ok((
                 Value::String(lua.create_string(&row.name)?),
                 Value::String(lua.create_string(&row.guild)?),
-                Value::Integer(i64::from(row.level)),
+                crate::script::lua_int(i64::from(row.level)),
                 Value::String(lua.create_string(&row.race)?),
                 Value::String(lua.create_string(&row.class)?),
                 Value::String(lua.create_string(&row.zone)?),

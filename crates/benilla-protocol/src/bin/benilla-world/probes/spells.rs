@@ -1,7 +1,8 @@
 //! `--spells`: require `SMSG_INITIAL_SPELLS` and `SMSG_ACTION_BUTTONS` at login, then a
 //! `SMSG_CAST_RESULT` for a self cast, a ground cast and a packed-guid targeted cast.
 
-use std::time::{Duration, Instant};
+use std::time::Duration;
+use web_time::Instant;
 
 use anyhow::{bail, Context, Result};
 use benilla_protocol::{decode, guid, EntityKind, SessionEvent};

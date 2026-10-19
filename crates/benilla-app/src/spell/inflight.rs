@@ -3,7 +3,8 @@
 //! auto-repeat key (`0xceac30`), and the local abort on a move, jump or Esc (`AbortCast
 //! 0x6e4940`).
 
-use std::time::{Duration, Instant};
+use std::time::Duration;
+use web_time::Instant;
 
 use bevy::prelude::*;
 

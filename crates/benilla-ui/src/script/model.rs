@@ -1651,12 +1651,12 @@ impl Model {
         // `WOW_LAYOUT_TOUCH_TRACE=<secs>:<n>`: backtraces the first `n` touches after `secs`.
         use std::sync::atomic::{AtomicU32, Ordering};
         use std::sync::OnceLock;
-        static SPEC: OnceLock<Option<(std::time::Instant, f64, AtomicU32)>> = OnceLock::new();
+        static SPEC: OnceLock<Option<(web_time::Instant, f64, AtomicU32)>> = OnceLock::new();
         let spec = SPEC.get_or_init(|| {
             let v = std::env::var("WOW_LAYOUT_TOUCH_TRACE").ok()?;
             let (secs, n) = v.split_once(':')?;
             Some((
-                std::time::Instant::now(),
+                web_time::Instant::now(),
                 secs.trim().parse().ok()?,
                 AtomicU32::new(n.trim().parse().ok()?),
             ))
@@ -1681,12 +1681,12 @@ impl Model {
 fn derive_trace_armed() -> bool {
     use std::sync::atomic::{AtomicU32, Ordering};
     use std::sync::OnceLock;
-    static SPEC: OnceLock<Option<(std::time::Instant, f64, AtomicU32)>> = OnceLock::new();
+    static SPEC: OnceLock<Option<(web_time::Instant, f64, AtomicU32)>> = OnceLock::new();
     let Some((t0, delay, left)) = SPEC.get_or_init(|| {
         let v = std::env::var("WOW_LAYOUT_DERIVE_TRACE").ok()?;
         let (secs, n) = v.split_once(':')?;
         Some((
-            std::time::Instant::now(),
+            web_time::Instant::now(),
             secs.trim().parse().ok()?,
             AtomicU32::new(n.trim().parse().ok()?),
         ))

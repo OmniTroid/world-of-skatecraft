@@ -16,6 +16,7 @@ default = ["dev"]
 dev = []
 
 [dependencies]
+web-time.workspace = true
 anyhow.workspace = true
 clap.workspace = true
 benilla-adt = { path = "../benilla-adt" }

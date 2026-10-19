@@ -3,7 +3,7 @@
 //! (`PetHandler.cpp:203-300`), and sends `SMSG_PET_MODE` only from `Pet::SetEnabled`
 //! (`Pet.cpp:2362-2377`), so the client applies them itself until the next `SMSG_PET_SPELLS`.
 
-use std::time::Instant;
+use web_time::Instant;
 
 use bevy::prelude::*;
 

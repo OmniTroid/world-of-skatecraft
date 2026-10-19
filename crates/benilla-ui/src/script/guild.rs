@@ -329,7 +329,7 @@ pub(super) fn install(lua: &Lua) -> mlua::Result<()> {
             Ok((
                 Value::String(lua.create_string(&guild.name)?),
                 Value::String(lua.create_string(&guild.rank_name)?),
-                Value::Integer(i64::from(guild.rank_index)),
+                crate::script::lua_int(i64::from(guild.rank_index)),
             ))
         })?,
     )?;
@@ -360,8 +360,8 @@ pub(super) fn install(lua: &Lua) -> mlua::Result<()> {
             Ok(MultiValue::from_vec(vec![
                 Value::String(lua.create_string(&m.name)?),
                 Value::String(lua.create_string(&m.rank)?),
-                Value::Integer(i64::from(m.rank_index)),
-                Value::Integer(i64::from(m.level)),
+                crate::script::lua_int(i64::from(m.rank_index)),
+                crate::script::lua_int(i64::from(m.level)),
                 Value::String(lua.create_string(&m.class)?),
                 Value::String(lua.create_string(&m.zone)?),
                 Value::String(lua.create_string(&m.note)?),
@@ -383,10 +383,10 @@ pub(super) fn install(lua: &Lua) -> mlua::Result<()> {
             };
             let last = m.last_online;
             Ok((
-                Value::Integer(i64::from(last.years)),
-                Value::Integer(i64::from(last.months)),
-                Value::Integer(i64::from(last.days)),
-                Value::Integer(i64::from(last.hours)),
+                crate::script::lua_int(i64::from(last.years)),
+                crate::script::lua_int(i64::from(last.months)),
+                crate::script::lua_int(i64::from(last.days)),
+                crate::script::lua_int(i64::from(last.hours)),
             ))
         })?,
     )?;

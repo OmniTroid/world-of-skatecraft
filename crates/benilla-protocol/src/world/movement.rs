@@ -7,7 +7,7 @@ pub(super) const MOVEMENT_FLAG_FORWARD: u32 = 0x1;
 /// vmangos pauses extrapolation on 0 and otherwise uses only deltas, so a full `u32` wrap is safe.
 pub(super) fn client_uptime_ms() -> u32 {
     use std::sync::OnceLock;
-    use std::time::Instant;
+    use web_time::Instant;
     static START: OnceLock<Instant> = OnceLock::new();
     (START.get_or_init(Instant::now).elapsed().as_millis() as u32).max(1)
 }

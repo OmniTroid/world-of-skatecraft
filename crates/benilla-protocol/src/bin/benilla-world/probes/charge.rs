@@ -2,7 +2,8 @@
 //! `SMSG_MONSTER_MOVE` for our own guid (a self spline), and the session must survive our
 //! `CMSG_MOVE_SPLINE_DONE` ack.
 
-use std::time::{Duration, Instant};
+use std::time::Duration;
+use web_time::Instant;
 
 use anyhow::{bail, Context, Result};
 use benilla_protocol::{guid, EntityKind, SessionEvent};

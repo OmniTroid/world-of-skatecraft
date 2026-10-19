@@ -49,7 +49,7 @@ pub(crate) struct LayoutFile {
     /// Whether this VM has unsaved drags. Keyed on the VM, as a flag that outlived its VM would
     /// write a fresh tree, with nothing placed, over the player's file.
     dirty: VmMemo<bool>,
-    last_change: Option<std::time::Instant>,
+    last_change: Option<web_time::Instant>,
 }
 
 /// Render the cache as [`parse`] reads it, frames name-sorted as the engine hands them.
@@ -180,7 +180,7 @@ fn watch_layout(script: Option<NonSendMut<UiScript>>, mut file: ResMut<LayoutFil
         return;
     }
     *file.dirty.get(&script) = true;
-    file.last_change = Some(std::time::Instant::now());
+    file.last_change = Some(web_time::Instant::now());
 }
 
 /// The autosave: dirty and one quiet second rewrite the file atomically. Every orderly end is

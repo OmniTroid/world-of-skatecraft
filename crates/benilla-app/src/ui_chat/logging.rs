@@ -101,11 +101,25 @@ fn local_now() -> [u32; 6] {
     .map(u32::from)
 }
 
+/// `[month, day, hour, minute, second, millisecond]` of now, in the browser's time zone.
+#[cfg(target_arch = "wasm32")]
+fn local_now() -> [u32; 6] {
+    let d = js_sys::Date::new_0();
+    [
+        d.get_month() + 1,
+        d.get_date(),
+        d.get_hours(),
+        d.get_minutes(),
+        d.get_seconds(),
+        d.get_milliseconds(),
+    ]
+}
+
 /// `[month, day, hour, minute, second, millisecond]` of now, in the process's time zone.
 #[cfg(unix)]
 fn local_now() -> [u32; 6] {
-    let now = std::time::SystemTime::now()
-        .duration_since(std::time::UNIX_EPOCH)
+    let now = web_time::SystemTime::now()
+        .duration_since(web_time::UNIX_EPOCH)
         .unwrap_or_default();
     let [month, day, hour, min, sec] = local_fields(now.as_secs() as i64);
     [month, day, hour, min, sec, now.subsec_millis()]

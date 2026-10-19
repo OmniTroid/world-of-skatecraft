@@ -13,7 +13,7 @@
 //! `ToggleSpellAutocast(id, "pet")` sends `CMSG_PET_SPELL_AUTOCAST` (0x2F3) after `0x4bccb0` flips
 //! bit 30 locally, mirrors it onto the bar and fires `PET_BAR_UPDATE`.
 
-use std::time::Instant;
+use web_time::Instant;
 
 use bevy::prelude::*;
 

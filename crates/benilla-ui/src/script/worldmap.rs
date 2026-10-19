@@ -762,7 +762,7 @@ pub(super) fn install(lua: &Lua) -> mlua::Result<()> {
             Ok(MultiValue::from_vec(vec![
                 Value::String(lua.create_string(&l.name)?),
                 description,
-                Value::Integer(i64::from(l.texture_index)),
+                crate::script::lua_int(i64::from(l.texture_index)),
                 Value::Number(f64::from(l.uv.0)),
                 Value::Number(f64::from(l.uv.1)),
             ]))
@@ -795,10 +795,10 @@ pub(super) fn install(lua: &Lua) -> mlua::Result<()> {
             };
             Ok(MultiValue::from_vec(vec![
                 Value::String(lua.create_string(&o.texture)?),
-                Value::Integer(i64::from(o.width)),
-                Value::Integer(i64::from(o.height)),
-                Value::Integer(i64::from(o.offset_x)),
-                Value::Integer(i64::from(o.offset_y)),
+                crate::script::lua_int(i64::from(o.width)),
+                crate::script::lua_int(i64::from(o.height)),
+                crate::script::lua_int(i64::from(o.offset_x)),
+                crate::script::lua_int(i64::from(o.offset_y)),
                 Value::Integer(0),
                 Value::Integer(0),
             ]))

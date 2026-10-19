@@ -78,7 +78,7 @@ fn returns(lua: &Lua, a: &AuraState, with_dispel_type: bool) -> mlua::Result<Mul
         Some(t) => Value::String(lua.create_string(t)?),
         None => Value::Nil,
     };
-    let mut out = vec![icon, Value::Integer(i64::from(a.count))];
+    let mut out = vec![icon, crate::script::lua_int(i64::from(a.count))];
     if with_dispel_type {
         out.push(match &a.debuff_type {
             Some(t) => Value::String(lua.create_string(t)?),

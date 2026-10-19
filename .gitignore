@@ -51,3 +51,6 @@ __pycache__/
 # Setup's log and scratch.
 /setup.log
 /.setup/
+
+# The web build (scripts/web-build.sh).
+/web/dist

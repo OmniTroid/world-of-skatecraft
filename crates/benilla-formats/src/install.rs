@@ -54,11 +54,17 @@ fn benilla_checkout() -> Option<&'static Path> {
 /// The vanilla `Data` directory, or `None` when there is no install. Uncached, so a `$WOW_DATA`
 /// change is seen.
 pub fn wow_data() -> Option<PathBuf> {
-    candidates().into_iter().find(|c| c.is_dir())
+    candidates()
+        .into_iter()
+        .find(|c| benilla_mpq::fs::is_dir(c))
 }
 
 /// Every place [`wow_data`] looks, in order, whether or not it exists, for a "looked in" message.
 pub fn candidates() -> Vec<PathBuf> {
+    // The web build's install is the one the page's server serves.
+    if cfg!(target_arch = "wasm32") {
+        return vec![PathBuf::from("/wow/Data")];
+    }
     candidates_from(
         std::env::var_os("WOW_DATA").map(PathBuf::from),
         project_folder(),

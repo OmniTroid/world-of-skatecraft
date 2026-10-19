@@ -34,11 +34,15 @@ bevy = { version = "0.18.1", default-features = false, features = [
 wgpu = "27"
 clap = { version = "4.6.1", features = ["derive"] }
 sha1 = "0.10.6"
+# `Instant` and `SystemTime` that work on the web, the same type Bevy uses; std natively.
+web-time = "1.1"
 
 # lua-src builds the addon VM's Lua 5.1.5, patched to accept exactly the 1.12 client's grammar;
 # the hunks and the command that checks them: `third_party/lua-src/BENILLA.md`.
 [patch.crates-io]
 lua-src = { path = "third_party/lua-src" }
+# `std::time::Instant` swapped for `web_time::Instant`, which the web build needs; see its BENILLA.md.
+crossbeam-channel = { path = "third_party/crossbeam-channel" }
 # kira 0.12.4, patched to compute spatial gains and the volume tween per output chunk and
 # interpolate them, not per sample frame (`third_party/kira/BENILLA.md`).
 kira = { path = "third_party/kira" }

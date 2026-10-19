@@ -1,0 +1,21 @@
+# The web build's local host: the page, the install read-only, and a WebSocket bridge to the
+# local server's realmd (3724) and world (8085) ports. See docs/WEB.md.
+#   scripts/web-build.sh && docker compose -f web/compose.yaml up -d   # then http://localhost:8090
+services:
+  web:
+    image: nginx:1.29-alpine
+    ports:
+      - 127.0.0.1:8090:80
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./dist:/srv/web:ro
+      - ${WOW_DIR:-../WoW}/Data:/srv/wow/Data:ro
+    depends_on: [bridge]
+  bridge:
+    image: python:3.13-alpine
+    command: >
+      sh -c "pip install -q websockify && {
+             websockify 3724 host.docker.internal:3724 &
+             exec websockify 8085 host.docker.internal:8085; }"
+    extra_hosts:
+      - host.docker.internal:host-gateway

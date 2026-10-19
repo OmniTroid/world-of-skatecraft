@@ -3,7 +3,8 @@
 //! `0x4b31b0` fires `ACTIONBAR_UPDATE_COOLDOWN` then `SPELL_UPDATE_COOLDOWN` and `0x4bce90` fires
 //! `PET_BAR_UPDATE_COOLDOWN`; none of the callers fires `PET_BAR_UPDATE`.
 
-use std::time::{Duration, Instant};
+use std::time::Duration;
+use web_time::Instant;
 
 use benilla_formats::SpellDisplay;
 use benilla_protocol::messages::{PetSpellCooldown, PetSpells};

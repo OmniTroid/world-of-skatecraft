@@ -1,7 +1,8 @@
 //! `--vendor`: list the nearest vendor, buy its cheapest row and require a reaction; a coinage
 //! delta confirms the `PLAYER_FIELD_COINAGE` accessor.
 
-use std::time::{Duration, Instant};
+use std::time::Duration;
+use web_time::Instant;
 
 use anyhow::{bail, Context, Result};
 use benilla_protocol::{decode, SessionEvent};

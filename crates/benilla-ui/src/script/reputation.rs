@@ -306,10 +306,10 @@ pub(super) fn install(lua: &Lua) -> mlua::Result<()> {
                     Ok(MultiValue::from_vec(vec![
                         Value::String(lua.create_string(&e.name)?),
                         Value::String(lua.create_string(&e.description)?),
-                        Value::Integer(i64::from(e.standing_id)),
-                        Value::Integer(i64::from(e.bar_min)),
-                        Value::Integer(i64::from(e.bar_max)),
-                        Value::Integer(i64::from(e.standing)),
+                        crate::script::lua_int(i64::from(e.standing_id)),
+                        crate::script::lua_int(i64::from(e.bar_min)),
+                        crate::script::lua_int(i64::from(e.bar_max)),
+                        crate::script::lua_int(i64::from(e.standing)),
                         binding_abi::flag(e.at_war),
                         binding_abi::flag(e.can_toggle_at_war),
                         Value::Nil, // isHeader
@@ -457,10 +457,10 @@ pub(super) fn install(lua: &Lua) -> mlua::Result<()> {
             };
             Ok(MultiValue::from_vec(vec![
                 Value::String(lua.create_string(&e.name)?),
-                Value::Integer(i64::from(e.standing_id)),
-                Value::Integer(i64::from(e.bar_min)),
-                Value::Integer(i64::from(e.bar_max)),
-                Value::Integer(i64::from(e.standing)),
+                crate::script::lua_int(i64::from(e.standing_id)),
+                crate::script::lua_int(i64::from(e.bar_min)),
+                crate::script::lua_int(i64::from(e.bar_max)),
+                crate::script::lua_int(i64::from(e.standing)),
             ]))
         })?,
     )?;

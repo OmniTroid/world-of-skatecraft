@@ -145,7 +145,7 @@ pub(super) fn install(lua: &Lua) -> mlua::Result<()> {
         let mut out = Vec::with_capacity(rows.len() * 2);
         for (title, level) in rows {
             out.push(Value::String(lua.create_string(&title)?));
-            out.push(Value::Integer(i64::from(level)));
+            out.push(crate::script::lua_int(i64::from(level)));
         }
         Ok(MultiValue::from_vec(out))
     }

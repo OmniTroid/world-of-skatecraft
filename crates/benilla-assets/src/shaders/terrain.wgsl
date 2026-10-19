@@ -211,10 +211,11 @@ fn fragment(in: TerrainVsOut) -> @location(0) vec4<f32> {
     // `terrainp_s.bls`, which reads the MCSH bit from the blend texture's alpha (1 lit, 0 shadowed)
     // and uses it twice, below; with them off the reference draws a separate ambient-tint overlay.
     // Our `shadow_array` is 255 shadowed, 0 lit; a chunk with no MCSH map (`uv_b.y < 0`) is lit.
+    // Sampled before the branch: WebGPU rejects an implicit-LOD sample in non-uniform control flow.
     var shadow_lit = 1.0;
     let si = in.uv_b.y;
+    let mcsh = textureSample(shadow_array, splat_samp, auv, max(i32(round(si)), 0)).r;
     if (si >= 0.0) {
-        let mcsh = textureSample(shadow_array, splat_samp, auv, i32(round(si))).r;
         shadow_lit = 1.0 - mcsh;
     }
 

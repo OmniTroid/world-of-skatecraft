@@ -2,7 +2,7 @@
 //! `CastingBarFrame.lua:6-13` registers for, named from `Spell.dbc`, and the VM's casting flag
 //! is pushed each frame. The cast lifecycle it reads is `crate::spell`'s.
 
-use std::time::Instant;
+use web_time::Instant;
 
 use bevy::prelude::*;
 

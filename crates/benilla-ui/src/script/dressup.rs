@@ -63,7 +63,7 @@ pub(super) fn redress_if_dressup(lua: &Lua, this: &Table) -> mlua::Result<()> {
 /// else is 0.
 fn item_arg(v: &Value) -> i64 {
     match v {
-        Value::Integer(i) => *i,
+        Value::Integer(i) => crate::script::int_of(*i),
         Value::Number(n) => n.trunc() as i64,
         Value::String(s) => s
             .to_str()

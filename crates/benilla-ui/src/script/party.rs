@@ -281,10 +281,10 @@ fn raid_roster_info(lua: &Lua, row: Option<RaidMemberInfo>) -> mlua::Result<Mult
     let flag = |b: bool| if b { Value::Integer(1) } else { Value::Nil };
     Ok(MultiValue::from_vec(vec![
         lua.create_string(&m.name).map(Value::String)?,
-        Value::Integer(i64::from(m.rank)),
+        crate::script::lua_int(i64::from(m.rank)),
         // Stored 0-based, exposed 1-based (`0x4bb61a inc eax`).
-        Value::Integer(i64::from(m.subgroup) + 1),
-        Value::Integer(i64::from(m.level)),
+        crate::script::lua_int(i64::from(m.subgroup) + 1),
+        crate::script::lua_int(i64::from(m.level)),
         opt_str(&m.class)?,
         opt_str(&m.class_file)?,
         zone,
@@ -400,7 +400,7 @@ pub(super) fn install(lua: &Lua) -> mlua::Result<()> {
                 model.party.loot_method.as_str()
             };
             let master = match model.party.master_looter {
-                Some(idx) => Value::Integer(i64::from(idx)),
+                Some(idx) => crate::script::lua_int(i64::from(idx)),
                 None => Value::Nil,
             };
             Ok((Value::String(lua.create_string(method)?), master))
@@ -670,8 +670,8 @@ pub(super) fn install(lua: &Lua) -> mlua::Result<()> {
             Ok(match row {
                 Some(r) => MultiValue::from_vec(vec![
                     Value::String(lua.create_string(&r.name)?),
-                    Value::Integer(i64::from(r.instance)),
-                    Value::Integer(i64::from(r.reset)),
+                    crate::script::lua_int(i64::from(r.instance)),
+                    crate::script::lua_int(i64::from(r.reset)),
                 ]),
                 None => MultiValue::new(),
             })

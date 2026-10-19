@@ -2,7 +2,8 @@
 //! `UNIT_FIELD_AURA` (half, cancelable bit, level byte, stack bias), and requires each one's
 //! `SMSG_UPDATE_AURA_DURATION` to arrive before the descriptor delta that names it.
 
-use std::time::{Duration, Instant};
+use std::time::Duration;
+use web_time::Instant;
 
 use anyhow::{bail, ensure, Context, Result};
 use benilla_protocol::{decode, ObjectFields, ServerPacket, SessionEvent};

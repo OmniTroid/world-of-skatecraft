@@ -7,7 +7,8 @@
 //! in one frame. Coordinates cross from WoW into Bevy space here (`wow_to_bevy`).
 
 use std::collections::{HashMap, HashSet};
-use std::time::{Duration, Instant};
+use std::time::Duration;
+use web_time::Instant;
 
 use benilla_protocol::{
     messages::WhoRequest, EntityKind, JumpInfo, MoveMode, MoveSpeeds, ObjectFields, SessionEvent,
@@ -67,6 +68,9 @@ impl Plugin for NetPlugin {
         crate::query_cache::register::<crate::go_templates::GameObjectTemplates>(app);
         crate::query_cache::register::<crate::items::Items>(app);
         let handles = io::spawn_net(self.connect);
+        // The web build's sockets are WebSockets the main thread opens and writes for them.
+        #[cfg(target_arch = "wasm32")]
+        app.add_systems(First, || benilla_protocol::net::pump());
         if !self.connect {
             app.insert_resource(NetOffline);
         }

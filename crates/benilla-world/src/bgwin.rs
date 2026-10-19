@@ -48,6 +48,10 @@ pub fn background_run() -> bool {
         Ok(_) => return true,
         Err(_) => {}
     }
+    // The web build has no environment, and `vars_os` panics there.
+    if cfg!(target_arch = "wasm32") {
+        return false;
+    }
     std::env::vars_os().any(|(name, _)| {
         name.to_str()
             .is_some_and(|name| BG_ENV_PREFIXES.iter().any(|p| name.starts_with(p)))

@@ -12,7 +12,8 @@
 //! `AllowTwoSide.Interaction.Channel = 0` (on, `Channel::Say` rewrites the language to
 //! `LANG_UNIVERSAL`).
 
-use std::time::{Duration, Instant};
+use std::time::Duration;
+use web_time::Instant;
 
 use anyhow::{bail, Context, Result};
 use benilla_protocol::messages::{

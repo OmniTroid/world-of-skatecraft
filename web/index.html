@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>benilla</title>
+<style>
+  :root { --bg: #000; --panel: #14100a; --edge: #5a4a2a; --text: #e8d9b0; --muted: #a8977a; --accent: #c8b27a; }
+  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--text); overflow: hidden;
+               font: 15px system-ui, sans-serif; }
+  #benilla { display: block; width: 100%; height: 100%; outline: none; }
+  #launcher { position: fixed; inset: 0; display: grid; place-items: center; padding: 16px; }
+  #launcher[hidden] { display: none; }
+  .panel { max-width: 420px; width: 100%; background: var(--panel); border: 1px solid var(--edge);
+           border-radius: 8px; padding: 24px; box-sizing: border-box; }
+  h1 { margin: 0 0 4px; font-size: 22px; color: var(--accent); }
+  p { margin: 0 0 18px; color: var(--muted); line-height: 1.4; }
+  button { display: block; width: 100%; margin: 0 0 10px; padding: 12px; font: inherit; cursor: pointer;
+           background: #2a2012; color: var(--text); border: 1px solid var(--edge); border-radius: 6px; }
+  button:hover { border-color: var(--accent); }
+  button[disabled] { opacity: 0.45; cursor: default; }
+  small { display: block; color: var(--muted); }
+  #status { position: fixed; left: 12px; bottom: 10px; color: var(--accent); font-size: 13px; }
+</style>
+</head>
+<body>
+<canvas id="benilla" tabindex="0"></canvas>
+<div id="launcher" hidden>
+  <div class="panel">
+    <h1>benilla</h1>
+    <p>Where should the game data come from?</p>
+    <button id="server">Served by the local server</button>
+    <button id="local">My WoW folder<small>Chromium only, read-only</small></button>
+    <button id="resume" hidden>Continue with my WoW folder</button>
+  </div>
+</div>
+<div id="status"></div>
+<script type="module">
+const status = document.getElementById('status');
+const launcher = document.getElementById('launcher');
+const say = text => { status.textContent = text; };
+
+// WebGPU errors and a lost device are otherwise silent; surface them.
+if (navigator.gpu) {
+    const requestDevice = GPUAdapter.prototype.requestDevice;
+    GPUAdapter.prototype.requestDevice = async function (...args) {
+        const device = await requestDevice.apply(this, args);
+        device.addEventListener('uncapturederror', e => console.error('[webgpu]', e.error?.message ?? e));
+        device.lost.then(info => console.error('[webgpu] device lost:', info.reason, info.message));
+        // A WGSL error otherwise reaches only DevTools: print it with its source lines.
+        const createShaderModule = device.createShaderModule;
+        device.createShaderModule = function (desc) {
+            const module = createShaderModule.call(this, desc);
+            module.getCompilationInfo().then(info => {
+                for (const m of info.messages.filter(m => m.type === 'error')) {
+                    const lines = desc.code.split('\n');
+                    const around = lines.slice(Math.max(0, m.lineNum - 3), m.lineNum + 2).join('\n');
+                    console.error(`[webgpu] WGSL error ${desc.label ?? ''} line ${m.lineNum}: ${m.message}\n${around}`);
+                }
+            });
+            return module;
+        };
+        return device;
+    };
+}
+
+// Browsers start audio suspended until the page is used: resume every context on the first input.
+// `__benillaAudio` is the worklet's stutter meter (web/audio-worklet.js).
+const contexts = [];
+globalThis.__benillaAudio = {};
+const RealAudioContext = window.AudioContext;
+window.AudioContext = function (...args) {
+    const ctx = new RealAudioContext(...args);
+    contexts.push(ctx);
+    return ctx;
+};
+window.AudioContext.prototype = RealAudioContext.prototype;
+const RealWorkletNode = window.AudioWorkletNode;
+window.AudioWorkletNode = function (...args) {
+    const node = new RealWorkletNode(...args);
+    node.port.onmessage = e => { globalThis.__benillaAudio = e.data; };
+    return node;
+};
+window.AudioWorkletNode.prototype = RealWorkletNode.prototype;
+for (const type of ['pointerdown', 'keydown']) {
+    addEventListener(type, () => contexts.forEach(c => c.state === 'suspended' && c.resume()), true);
+}
+
+// Worker console lines, mirrored by web/wasi.js.
+new BroadcastChannel('benilla-worker-log').onmessage = e => console[e.data.level]('[worker]', e.data.text);
+
+// Thread workers fail silently; surface their errors here.
+const RealWorker = Worker;
+window.Worker = function (url, options) {
+    const w = new RealWorker(url, options);
+    w.addEventListener('error', e => console.error('[worker]', options?.name ?? '', e.message ?? e));
+    w.addEventListener('messageerror', e => console.error('[worker] message error', e));
+    return w;
+};
+
+// The picked folder handle, shared with the service worker through IndexedDB.
+function idb(mode, op) {
+    return new Promise((resolve, reject) => {
+        const open = indexedDB.open('benilla', 1);
+        open.onupgradeneeded = () => open.result.createObjectStore('handles');
+        open.onerror = () => reject(open.error);
+        open.onsuccess = () => {
+            const req = op(open.result.transaction('handles', mode).objectStore('handles'));
+            req.onsuccess = () => resolve(req.result);
+            req.onerror = () => reject(req.error);
+        };
+    });
+}
+const savedFolder = () => idb('readonly', s => s.get('wow'));
+const saveFolder = handle => idb('readwrite', s => s.put(handle, 'wow'));
+
+// Local-folder mode: the client reads each file of the picked `Data` folder through a blob URL
+// (crates/benilla-mpq/src/fs/web.rs), since its reads are synchronous and only the page has the files.
+async function useLocal(picked) {
+    let data = picked;
+    try { data = await picked.getDirectoryHandle('Data'); } catch (_) { /* the folder is `Data` */ }
+    const files = {};
+    for await (const [name, handle] of data.entries()) {
+        if (handle.kind !== 'file') continue;
+        const file = await handle.getFile();
+        files[name] = { url: URL.createObjectURL(file), size: file.size };
+    }
+    if (!Object.keys(files).some(n => /\.mpq$/i.test(n))) throw new Error('no MPQs in the picked folder');
+    globalThis.__benillaLocal = files;
+}
+
+async function start() {
+    launcher.hidden = true;
+    say('Loading…');
+    const { default: init } = await import('./benilla.js');
+    try {
+        await init({ module_or_path: './benilla_bg.wasm' });
+    } catch (e) {
+        // winit's event loop hands control to the browser with an exception; the app keeps running.
+        if (!String(e).includes('Using exceptions for control flow')) {
+            say('Failed: ' + e);
+            throw e;
+        }
+    }
+    say('');
+}
+
+const pick = async mode => {
+    localStorage.setItem('benilla.data', mode);
+    for (const r of await navigator.serviceWorker?.getRegistrations() ?? []) await r.unregister();
+    if (mode === 'local') {
+        let handle = await savedFolder();
+        const granted = h => h.queryPermission({ mode: 'read' }).then(p => p === 'granted');
+        if (!handle || !(await granted(handle) || (await handle.requestPermission({ mode: 'read' })) === 'granted')) {
+            handle = await window.showDirectoryPicker({ id: 'wow', mode: 'read' });
+            await saveFolder(handle);
+        }
+        await useLocal(handle);
+    }
+    await start();
+};
+
+if (!navigator.gpu) {
+    say('This browser has no WebGPU.');
+} else {
+    const local = document.getElementById('local');
+    if (!('showDirectoryPicker' in window)) local.disabled = true;
+    document.getElementById('server').onclick = () => pick('server');
+    local.onclick = () => pick('local').catch(e => say(String(e)));
+    document.getElementById('resume').onclick = () => pick('local').catch(e => say(String(e)));
+    const mode = new URLSearchParams(location.search).get('data') ?? localStorage.getItem('benilla.data');
+    if (mode === 'server') {
+        await pick('server');
+    } else if (mode === 'local' && (await (await savedFolder())?.queryPermission({ mode: 'read' })) === 'granted') {
+        await pick('local');
+    } else {
+        // A remembered folder needs a click to re-grant its permission.
+        if (mode === 'local' && await savedFolder()) document.getElementById('resume').hidden = false;
+        launcher.hidden = false;
+    }
+}
+</script>
+</body>
+</html>

@@ -171,7 +171,7 @@ pub(super) fn install(lua: &Lua) -> mlua::Result<()> {
                 Value::String(lua.create_string(&r.petition_type)?),
                 Value::String(lua.create_string(&r.title)?),
                 Value::String(lua.create_string(&r.body_text)?),
-                Value::Integer(i64::from(r.max_signatures)),
+                crate::script::lua_int(i64::from(r.max_signatures)),
                 name_value(lua, r.originator.as_ref())?,
                 binding_abi::flag(r.is_originator),
             ]))

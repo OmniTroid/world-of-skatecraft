@@ -4,7 +4,8 @@
 //! Run: `cargo run -p benilla-protocol --example faction_probe -- probeN <password> [host]`. The
 //! account has no default, because a login kicks whoever is on the account.
 
-use std::time::{Duration, Instant};
+use std::time::Duration;
+use web_time::Instant;
 
 use anyhow::{Context, Result};
 use benilla_protocol::{decode, EntityKind, SessionEvent, WorldSession, WORLD_PORT};

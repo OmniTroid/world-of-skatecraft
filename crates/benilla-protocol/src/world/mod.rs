@@ -4,8 +4,8 @@
 //! seed, SHA1 over key and seeds) travel plain; every header after them is encrypted (4-byte
 //! server, 6-byte client), bodies never, starting with `SMSG_AUTH_RESPONSE`.
 
+use crate::net::TcpStream;
 use std::io::{Read, Write};
-use std::net::TcpStream;
 
 use anyhow::{anyhow, Result};
 use benilla_srp::vanilla_header::{DecrypterHalf, EncrypterHalf};

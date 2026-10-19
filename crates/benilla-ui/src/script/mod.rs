@@ -479,6 +479,32 @@ pub const INSTRUCTION_HOOK_STEP: u32 = 1_000_000;
 /// The chunk name the 1.12 client gives an addon's file, `Interface\AddOns\<Folder>\<File>`,
 /// backslashed and with the file, because addons parse it: `FuBarPlugin-2.0` finds its folder with
 /// the greedy `\\AddOns\\(.*)\\` over `debugstack`, which needs the file after the folder.
+/// An integer as a Lua value: `mlua::Integer` is the C `ptrdiff_t`, 32 bits on wasm32, where a
+/// wider value goes out as a number, as Lua 5.1 stores it anyway.
+#[cfg(target_pointer_width = "64")]
+pub(crate) fn lua_int(n: i64) -> mlua::Value {
+    mlua::Value::Integer(n)
+}
+
+#[cfg(not(target_pointer_width = "64"))]
+pub(crate) fn lua_int(n: i64) -> mlua::Value {
+    match mlua::Integer::try_from(n) {
+        Ok(i) => mlua::Value::Integer(i),
+        Err(_) => mlua::Value::Number(n as f64),
+    }
+}
+
+/// A Lua integer widened to `i64` on every target.
+#[cfg(target_pointer_width = "64")]
+pub(crate) fn int_of(n: mlua::Integer) -> i64 {
+    n
+}
+
+#[cfg(not(target_pointer_width = "64"))]
+pub(crate) fn int_of(n: mlua::Integer) -> i64 {
+    i64::from(n)
+}
+
 pub fn addon_chunk_name(folder: &str, file: &str) -> String {
     // `@` marks the chunk as a file, so a traceback prints the path plainly.
     format!("@Interface\\AddOns\\{folder}\\{}", file.replace('/', "\\"))

@@ -311,8 +311,8 @@ pub(super) fn install(lua: &Lua) -> mlua::Result<()> {
                 ]));
             };
             Ok(MultiValue::from_vec(vec![
-                Value::Integer(batch),
-                Value::Integer(total.max(batch)),
+                crate::script::lua_int(batch),
+                crate::script::lua_int(total.max(batch)),
             ]))
         })?,
     )?;
@@ -357,17 +357,17 @@ pub(super) fn install(lua: &Lua) -> mlua::Result<()> {
             Ok(MultiValue::from_vec(vec![
                 opt_str(&r.name)?,
                 opt_str(&r.texture)?,
-                Value::Integer(i64::from(r.count)),
+                crate::script::lua_int(i64::from(r.count)),
                 match r.quality {
-                    Some(q) => Value::Integer(i64::from(q)),
+                    Some(q) => crate::script::lua_int(i64::from(q)),
                     None => Value::Nil,
                 },
                 flag(can_use),
-                Value::Integer(i64::from(r.level)),
-                Value::Integer(i64::from(r.min_bid)),
-                Value::Integer(i64::from(r.min_increment)),
-                Value::Integer(i64::from(r.buyout_price)),
-                Value::Integer(i64::from(r.bid_amount)),
+                crate::script::lua_int(i64::from(r.level)),
+                crate::script::lua_int(i64::from(r.min_bid)),
+                crate::script::lua_int(i64::from(r.min_increment)),
+                crate::script::lua_int(i64::from(r.buyout_price)),
+                crate::script::lua_int(i64::from(r.bid_amount)),
                 match &r.high_bidder {
                     AuctionHighBidder::Nil => Value::Nil,
                     AuctionHighBidder::Player => flag(true),
@@ -734,10 +734,10 @@ pub(super) fn install(lua: &Lua) -> mlua::Result<()> {
                     Some(t) => Value::String(lua.create_string(t)?),
                     None => Value::Nil,
                 },
-                Value::Integer(i64::from(count)),
-                Value::Integer(quality),
+                crate::script::lua_int(i64::from(count)),
+                crate::script::lua_int(quality),
                 flag(can_use),
-                Value::Integer(i64::from(price)),
+                crate::script::lua_int(i64::from(price)),
             ]))
         })?,
     )?;

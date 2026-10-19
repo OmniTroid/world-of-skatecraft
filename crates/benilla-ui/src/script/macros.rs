@@ -371,7 +371,7 @@ pub(super) fn install(lua: &Lua) -> mlua::Result<()> {
             let (local_only, per_character) = (flag(a.get(3)), flag(a.get(4)));
             Ok(
                 match create_macro(&mut model, &name, texture, &body, local_only, per_character) {
-                    Some(i) => Value::Integer(i as i64),
+                    Some(i) => crate::script::lua_int(i as i64),
                     None => Value::Nil,
                 },
             )
@@ -399,7 +399,7 @@ pub(super) fn install(lua: &Lua) -> mlua::Result<()> {
             };
             Ok(
                 match edit_macro(&mut model, index, name, texture, body, local_only) {
-                    Some(i) => Value::Integer(i as i64),
+                    Some(i) => crate::script::lua_int(i as i64),
                     None => Value::Nil,
                 },
             )

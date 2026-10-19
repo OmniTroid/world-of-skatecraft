@@ -136,7 +136,7 @@ pub(super) fn install(lua: &Lua) -> mlua::Result<()> {
             Ok(MultiValue::from_vec(vec![
                 Value::String(lua.create_string(&tab.name)?),
                 Value::Nil,
-                Value::Integer(i64::from(tab.points_spent)),
+                crate::script::lua_int(i64::from(tab.points_spent)),
                 Value::String(lua.create_string(&tab.background)?),
             ]))
         })?,
@@ -168,11 +168,11 @@ pub(super) fn install(lua: &Lua) -> mlua::Result<()> {
             Ok(MultiValue::from_vec(vec![
                 Value::String(lua.create_string(&t.name)?),
                 texture,
-                Value::Integer(i64::from(t.tier)),
-                Value::Integer(i64::from(t.column)),
-                Value::Integer(i64::from(t.rank)),
-                Value::Integer(i64::from(t.max_rank)),
-                Value::Integer(i64::from(t.exceptional)),
+                crate::script::lua_int(i64::from(t.tier)),
+                crate::script::lua_int(i64::from(t.column)),
+                crate::script::lua_int(i64::from(t.rank)),
+                crate::script::lua_int(i64::from(t.max_rank)),
+                crate::script::lua_int(i64::from(t.exceptional)),
                 Value::Boolean(t.meets_prereq),
             ]))
         })?,
@@ -186,8 +186,8 @@ pub(super) fn install(lua: &Lua) -> mlua::Result<()> {
             let mut out = Vec::new();
             if let Some(t) = talent_at(&model, tab, i) {
                 for p in &t.prereqs {
-                    out.push(Value::Integer(i64::from(p.tier)));
-                    out.push(Value::Integer(i64::from(p.column)));
+                    out.push(crate::script::lua_int(i64::from(p.tier)));
+                    out.push(crate::script::lua_int(i64::from(p.column)));
                     out.push(Value::Boolean(p.learnable));
                 }
             }

@@ -10,7 +10,7 @@
 //! `gpu_other`.
 
 use std::path::PathBuf;
-use std::time::Instant;
+use web_time::Instant;
 
 use bevy::diagnostic::DiagnosticsStore;
 use bevy::prelude::*;

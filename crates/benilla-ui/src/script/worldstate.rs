@@ -86,16 +86,16 @@ pub(super) fn install(lua: &Lua) -> mlua::Result<()> {
             };
             let s = |v: &str| -> mlua::Result<Value> { Ok(Value::String(lua.create_string(v)?)) };
             Ok(MultiValue::from_vec(vec![
-                Value::Integer(i64::from(r.ui_state)),
+                crate::script::lua_int(i64::from(r.ui_state)),
                 s(&r.text)?,
                 s(&r.icon)?,
                 s(&r.dynamic_icon)?,
                 s(&r.tooltip)?,
                 s(&r.dynamic_tooltip)?,
                 s(&r.extended_ui)?,
-                Value::Integer(i64::from(r.extended_ui_state[0])),
-                Value::Integer(i64::from(r.extended_ui_state[1])),
-                Value::Integer(i64::from(r.extended_ui_state[2])),
+                crate::script::lua_int(i64::from(r.extended_ui_state[0])),
+                crate::script::lua_int(i64::from(r.extended_ui_state[1])),
+                crate::script::lua_int(i64::from(r.extended_ui_state[2])),
             ]))
         })?,
     )?;

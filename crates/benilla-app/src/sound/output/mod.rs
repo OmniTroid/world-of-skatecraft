@@ -32,13 +32,17 @@
 #[cfg(target_os = "macos")]
 #[path = "coreaudio.rs"]
 mod device;
-#[cfg(not(target_os = "macos"))]
+#[cfg(not(any(target_os = "macos", target_arch = "wasm32")))]
 #[path = "cpal.rs"]
+mod device;
+#[cfg(target_arch = "wasm32")]
+#[path = "web.rs"]
 mod device;
 
 use std::sync::atomic::{AtomicBool, AtomicI64, AtomicU32, AtomicU64, AtomicUsize, Ordering};
 use std::sync::{Arc, Mutex, OnceLock};
-use std::time::{Duration, Instant};
+use std::time::Duration;
+use web_time::Instant;
 
 use anyhow::{Context, Result};
 use bevy::log::{debug, warn};
@@ -320,16 +324,28 @@ impl Backend for OutputBackend {
         let group = Workgroup::of_device(&device);
         let shared = Arc::clone(&self.shared);
         let period_ns = frames_to_ns(RENDER_CHUNK_FRAMES, self.sample_rate);
-        let handle = std::thread::Builder::new()
+        #[cfg(not(target_arch = "wasm32"))]
+        {
+            let handle = std::thread::Builder::new()
+                .name("audio-render".into())
+                .spawn(move || render_loop(renderer, producer, shared, group, period_ns))
+                .context("spawning the render thread")?;
+            let _ = self
+                .shared
+                .control
+                .render_thread
+                .set(handle.thread().clone());
+            self.render = Some(handle);
+        }
+        // The web build's render thread is a worker; it names itself for the unparks.
+        #[cfg(target_arch = "wasm32")]
+        wasm_thread::Builder::new()
             .name("audio-render".into())
-            .spawn(move || render_loop(renderer, producer, shared, group, period_ns))
+            .spawn(move || {
+                let _ = shared.control.render_thread.set(std::thread::current());
+                render_loop(renderer, producer, shared, group, period_ns)
+            })
             .context("spawning the render thread")?;
-        let _ = self
-            .shared
-            .control
-            .render_thread
-            .set(handle.thread().clone());
-        self.render = Some(handle);
 
         self.stage = Stage::Idle {
             consumer,

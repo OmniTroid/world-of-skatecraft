@@ -345,12 +345,12 @@ pub(super) fn install(lua: &Lua) -> mlua::Result<()> {
             let shown = if look.shown { Some(1) } else { None };
             let docked = look.docked.map(i64::from);
             let num = |v: Option<i64>| match v {
-                Some(n) => Value::Integer(n),
+                Some(n) => crate::script::lua_int(n),
                 None => Value::Nil,
             };
             Ok(MultiValue::from_vec(vec![
                 Value::String(lua.create_string(&look.name)?),
-                Value::Integer(i64::from(look.font_size)),
+                crate::script::lua_int(i64::from(look.font_size)),
                 Value::Number(from_byte(look.r)),
                 Value::Number(from_byte(look.g)),
                 Value::Number(from_byte(look.b)),
@@ -613,9 +613,9 @@ pub(super) fn install(lua: &Lua) -> mlua::Result<()> {
                     look.channels.push((name, zone_id));
                 }
             })?;
-            Ok(MultiValue::from_vec(vec![Value::Integer(i64::from(
-                zone_id,
-            ))]))
+            Ok(MultiValue::from_vec(vec![crate::script::lua_int(
+                i64::from(zone_id),
+            )]))
         })?,
     )?;
 
@@ -668,7 +668,7 @@ pub(super) fn install(lua: &Lua) -> mlua::Result<()> {
             let mut out = Vec::new();
             for (name, zone_id) in &model.chat_window_looks[i].channels {
                 out.push(Value::String(lua.create_string(name)?));
-                out.push(Value::Integer(i64::from(*zone_id)));
+                out.push(crate::script::lua_int(i64::from(*zone_id)));
             }
             Ok(MultiValue::from_vec(out))
         })?,

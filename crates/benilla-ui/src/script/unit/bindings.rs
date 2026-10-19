@@ -291,7 +291,7 @@ pub(in crate::script) fn install(lua: &Lua) -> mlua::Result<()> {
             Ok(if r == 0 {
                 Value::Nil
             } else {
-                Value::Integer(i64::from(r))
+                crate::script::lua_int(i64::from(r))
             })
         })?,
     )?;
@@ -583,7 +583,7 @@ pub(in crate::script) fn install(lua: &Lua) -> mlua::Result<()> {
             )?);
             let idx = with_unit(lua, &token, 0u8, |u| u.raid_target)?;
             Ok(if idx > 0 {
-                Value::Integer(i64::from(idx))
+                crate::script::lua_int(i64::from(idx))
             } else {
                 Value::Nil
             })
@@ -762,7 +762,11 @@ pub(in crate::script) fn install(lua: &Lua) -> mlua::Result<()> {
                 Some(sex) => sex,
                 None => with_unit(lua, &token, 0u8, |u| u.sex)?,
             };
-            Ok(Value::Integer(i64::from(if sex == 0 { 2 } else { sex })))
+            Ok(crate::script::lua_int(i64::from(if sex == 0 {
+                2
+            } else {
+                sex
+            })))
         })?,
     )?;
 

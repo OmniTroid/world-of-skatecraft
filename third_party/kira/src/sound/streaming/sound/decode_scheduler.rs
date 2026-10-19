@@ -92,7 +92,12 @@ impl<Error: Send + 'static> DecodeScheduler<Error> {
 	}
 
 	pub fn start(mut self) {
-		std::thread::spawn(move || {
+		// benilla: the web build's threads are web workers.
+		#[cfg(target_arch = "wasm32")]
+		use wasm_thread::spawn;
+		#[cfg(not(target_arch = "wasm32"))]
+		use std::thread::spawn;
+		spawn(move || {
 			loop {
 				match self.run() {
 					Ok(result) => match result {

@@ -1,7 +1,7 @@
 //! The world session's write half: [`WorldWriter`] and one method per thing the player can do.
 //! Each family module mirrors its namesake in `crate::messages`, which builds the bodies.
 
-use std::net::TcpStream;
+use crate::net::TcpStream;
 
 use anyhow::Result;
 use benilla_srp::vanilla_header::EncrypterHalf;

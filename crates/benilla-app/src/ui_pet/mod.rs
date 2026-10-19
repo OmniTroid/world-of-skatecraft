@@ -3,7 +3,7 @@
 //! data (vmangos `CharmInfo::InitPetActionBar`), not a layout: a possessed or charmed unit fills
 //! the same ten words differently, so nothing here assumes them.
 
-use std::time::Instant;
+use web_time::Instant;
 
 use bevy::prelude::*;
 

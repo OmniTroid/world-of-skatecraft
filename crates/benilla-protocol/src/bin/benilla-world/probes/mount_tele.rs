@@ -7,7 +7,7 @@
 //! `SMSG_NEW_WORLD`, a self create block still at the mounted run speed, and the dismount's
 //! `SMSG_FORCE_RUN_SPEED_CHANGE` back to base, printing the gap. Needs GM.
 
-use std::time::Instant;
+use web_time::Instant;
 
 use anyhow::{ensure, Result};
 use benilla_protocol::{SessionEvent, SpeedKind};

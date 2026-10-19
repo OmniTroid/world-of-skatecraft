@@ -3,7 +3,7 @@
 //! `DynamicObject` create, the `SPELL_GO` and the removal with its lifetime. Blizzard (spell 10)
 //! channels 8 s and its object outlives the channel, so run with `--seconds 25`.
 
-use std::time::Instant;
+use web_time::Instant;
 
 use anyhow::{bail, Result};
 use benilla_protocol::{EntityKind, SessionEvent};

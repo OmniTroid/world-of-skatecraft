@@ -1,7 +1,8 @@
 //! `--equip-pack-slot`: `CMSG_AUTOEQUIP_ITEM` on a 1-based backpack slot must land the item in an
 //! equipment slot or draw a refusal; the item is then swapped home.
 
-use std::time::{Duration, Instant};
+use std::time::Duration;
+use web_time::Instant;
 
 use anyhow::{bail, Context, Result};
 use benilla_protocol::{decode, SessionEvent};

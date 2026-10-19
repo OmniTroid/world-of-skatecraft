@@ -3,7 +3,8 @@
 //! `Player::AddQuest`), and the countdown is that minus the server clock from `CMSG_QUERY_TIME`.
 //! The probe adds the quest itself, so the remaining time must sit just under the full limit.
 
-use std::time::{Duration, Instant};
+use std::time::Duration;
+use web_time::Instant;
 
 use anyhow::{bail, Context, Result};
 use benilla_protocol::events::decode;

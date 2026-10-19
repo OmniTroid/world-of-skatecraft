@@ -1,5 +1,5 @@
+use crate::net::TcpStream;
 use std::io::Read;
-use std::net::TcpStream;
 
 use anyhow::{anyhow, Result};
 use benilla_srp::vanilla_header::DecrypterHalf;

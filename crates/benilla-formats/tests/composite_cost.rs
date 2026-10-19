@@ -2,7 +2,8 @@
 //! tier-2 looks, each read, decoded and blitted in full, as a cache miss does, and what planning
 //! the same crowd costs.
 
-use std::time::{Duration, Instant};
+use std::time::Duration;
+use web_time::Instant;
 
 use benilla_formats::{load_item_display_catalog, open_chain, CharSections, ItemDisplay};
 

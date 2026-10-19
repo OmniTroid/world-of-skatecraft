@@ -3,7 +3,8 @@
 //! An item is `Guid` + [`ObjectStore`] + [`ItemObject`] in the guid index; item fields are private,
 //! so only our own arrive. Templates are keyed by entry, asked once, and survive disconnect.
 
-use std::time::{Duration, Instant};
+use std::time::Duration;
+use web_time::Instant;
 
 use bevy::prelude::*;
 

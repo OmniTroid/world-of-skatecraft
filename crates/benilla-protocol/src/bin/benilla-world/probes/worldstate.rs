@@ -6,7 +6,8 @@
 //! in chat. The level is read from `realmd.account_access` (a row per `RealmID` and a `-1` row),
 //! not `realmd.account.gmlevel`: grant both rows with the account offline, then revert.
 
-use std::time::{Duration, Instant};
+use std::time::Duration;
+use web_time::Instant;
 
 use anyhow::{bail, Result};
 use benilla_protocol::SessionEvent;

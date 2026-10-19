@@ -527,9 +527,9 @@ pub(super) fn install(lua: &Lua) -> mlua::Result<()> {
                 .map(|s| (s.cost, u32::from(s.prof_first_rank)))
                 .unwrap_or((0, 0));
             Ok(MultiValue::from_vec(vec![
-                Value::Integer(i64::from(money)),
+                crate::script::lua_int(i64::from(money)),
                 Value::Integer(0),
-                Value::Integer(i64::from(prof)),
+                crate::script::lua_int(i64::from(prof)),
             ]))
         })?,
     )?;
@@ -551,7 +551,7 @@ pub(super) fn install(lua: &Lua) -> mlua::Result<()> {
             };
             Ok(MultiValue::from_vec(vec![
                 Value::String(lua.create_string(&req.name)?),
-                Value::Integer(i64::from(req.rank)),
+                crate::script::lua_int(i64::from(req.rank)),
                 binding_abi::flag(req.met),
             ]))
         })?,

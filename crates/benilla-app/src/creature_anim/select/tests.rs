@@ -819,7 +819,8 @@ fn a_flying_spline_is_fly_before_backward_and_speed() {
 
 #[test]
 fn unify_stamps_flying_from_the_live_spline_on_every_leg() {
-    use std::time::{Duration, Instant};
+    use std::time::Duration;
+    use web_time::Instant;
     let spline = |grounded| crate::net::Spline {
         deck: None,
         points: vec![[0.0, 0.0, 0.0], [10.0, 0.0, 0.0]],
@@ -847,7 +848,8 @@ fn unify_stamps_flying_from_the_live_spline_on_every_leg() {
 #[test]
 fn the_granted_modes_fold_into_the_flags_word_on_every_leg_but_our_own() {
     use crate::net::UnitMoveModes;
-    use std::time::{Duration, Instant};
+    use std::time::Duration;
+    use web_time::Instant;
 
     let rooted = UnitMoveModes(move_flags::ROOT);
     let walking = UnitMoveModes(move_flags::WALK_MODE);

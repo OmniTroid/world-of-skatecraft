@@ -18,9 +18,8 @@ tracy = ["bevy/trace_tracy"]
 trace_chrome = ["bevy/trace_chrome"]
 
 [dependencies]
+web-time.workspace = true
 anyhow.workspace = true
-# The EditBox clipboard, on the main thread as NSPasteboard requires; bevy_egui's 3.x.
-arboard = "3"
 benilla-ui = { path = "../benilla-ui" }
 bevy.workspace = true
 wgpu.workspace = true
@@ -66,10 +65,10 @@ rtrb = "0.3"
 mint = "0.5"
 # The gossip greeting's weighted draw, re-rolled per open as in the reference.
 rand = "0.8"
+serde_json = "1"
 # Skate 3 mode: the skate engine, fetched from Chasm's 2010 Rust Rewrite Mashup (Kimmo3223's
 # branch adds Linux controller input); not part of this repository. See NOTICE.
 skate-host = { git = "https://github.com/Kimmo3223/2010-rust-rewrite-mashup", rev = "099b1948e9c08394b20c760ef123da38ef347278" }
-serde_json = "1"
 
 # Wayland clipboard over the standard `wl_data_device`; arboard's speaks `wlr-data-control`,
 # which GNOME does not implement.
@@ -96,9 +95,21 @@ objc2-app-kit = { version = "0.2", features = [
 ] }
 objc2-foundation = { version = "0.2", features = ["NSArray", "NSData", "NSGeometry"] }
 
-# The audio device layer off macOS (`sound::output::cpal`); on macOS cpal cannot rebuild on a
-# lost default device and drops the IO-cycle timestamp.
-[target.'cfg(not(target_os = "macos"))'.dependencies]
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+# The EditBox clipboard, on the main thread as NSPasteboard requires; bevy_egui's 3.x.
+arboard = "3"
+
+# The web build: WebGPU, workers for threads, an AudioWorklet for output (`sound::output::web`).
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+bevy = { workspace = true, features = ["webgpu", "web"] }
+js-sys = "0.3"
+wasm-bindgen = "0.2"
+wasm_thread = "0.3"
+web-sys = { version = "0.3", features = ["console", "AudioContext", "BaseAudioContext", "AudioWorklet", "Worklet", "AudioWorkletNode", "AudioWorkletNodeOptions", "AudioNode", "AudioDestinationNode"] }
+
+# The audio device layer off macOS and the web (`sound::output::cpal`); on macOS cpal cannot
+# rebuild on a lost default device and drops the IO-cycle timestamp.
+[target.'cfg(not(any(target_os = "macos", target_arch = "wasm32")))'.dependencies]
 cpal = "0.17"
 
 # Windows CPU clocks for `perf::clock`; `GetLocalTime` for the log stamp (`ui_chat::logging`); the

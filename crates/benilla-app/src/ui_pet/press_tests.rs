@@ -3,7 +3,7 @@
 //! The rig is shared with `flush_tests`, whose packets reach the same list.
 
 use std::collections::HashMap;
-use std::time::Instant;
+use web_time::Instant;
 
 use bevy::ecs::schedule::Schedule;
 use bevy::ecs::system::RunSystemOnce;

@@ -12,7 +12,8 @@ use std::fmt::Write as _;
 use std::panic::PanicHookInfo;
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicBool, Ordering};
-use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
+use std::time::Duration;
+use web_time::{Instant, SystemTime, UNIX_EPOCH};
 
 use crate::BuildId;
 
@@ -24,6 +25,9 @@ pub(crate) fn install(build: BuildId) {
     let previous = std::panic::take_hook();
     std::panic::set_hook(Box::new(move |info| {
         previous(info);
+        // The web build's stderr goes nowhere: the browser console is its terminal.
+        #[cfg(target_arch = "wasm32")]
+        web_sys::console::error_1(&format!("benilla panicked: {info}").into());
         report(info, build, started.elapsed());
     }));
 }

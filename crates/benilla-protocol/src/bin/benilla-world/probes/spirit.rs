@@ -2,7 +2,8 @@
 //! durability loss as `ITEM_FIELD_DURABILITY` deltas.
 
 use std::collections::HashMap;
-use std::time::{Duration, Instant};
+use std::time::Duration;
+use web_time::Instant;
 
 use anyhow::{bail, Result};
 use benilla_protocol::{guid, EntityKind, ObjectFields, SessionEvent};

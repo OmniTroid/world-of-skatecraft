@@ -373,6 +373,9 @@ fn launch(build: BuildId, extend: Option<Extension<'_>>) -> AppExit {
         // is born `AlwaysOnBottom` (`kCGNormalWindowLevel - 1`), so winit's two raises before the
         // first frame cannot flash it on top. `BgWinPlugin` promotes it to Normal once the launch
         // settles, so it can still be raised.
+        // The web build draws into the page's `<canvas id="benilla">`, sized by the page.
+        canvas: cfg!(target_arch = "wasm32").then(|| "#benilla".into()),
+        fit_canvas_to_parent: cfg!(target_arch = "wasm32"),
         focused: !background,
         window_level: if background {
             bevy::window::WindowLevel::AlwaysOnBottom

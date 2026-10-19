@@ -14,7 +14,7 @@
 
 use std::collections::HashMap;
 use std::sync::Arc;
-use std::time::Instant;
+use web_time::Instant;
 
 // avian's own AABB and collider-tree refresh, run a second time each frame in the chain below.
 use avian3d::collider_tree::update_moved_collider_aabbs as republish_moved_collider_aabbs;

@@ -19,7 +19,7 @@ const SIZES: &str = "benilla.lua50.sizes";
 /// also takes a numeric string through `lua_tonumber`; this does not.
 fn as_size(v: &Value) -> Option<i64> {
     match v {
-        Value::Integer(i) => (*i >= 0).then_some(*i),
+        Value::Integer(i) => (*i >= 0).then_some(crate::script::int_of(*i)),
         #[allow(clippy::cast_possible_truncation)]
         Value::Number(n) => {
             let i = *n as i64;
@@ -105,7 +105,7 @@ pub(super) fn install(lua: &Lua) -> mlua::Result<()> {
                 (n, it.next().unwrap_or(Value::Nil))
             } else {
                 let pos = match it.next() {
-                    Some(Value::Integer(i)) => i,
+                    Some(Value::Integer(i)) => crate::script::int_of(i),
                     #[allow(clippy::cast_possible_truncation)]
                     Some(Value::Number(x)) => x as i64,
                     _ => {

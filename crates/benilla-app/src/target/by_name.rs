@@ -438,7 +438,7 @@ pub(super) fn follow_requests(
             if let Some(key) = scan_params.follow_refusal(
                 *guid,
                 followee,
-                cast.in_flight(std::time::Instant::now()),
+                cast.in_flight(web_time::Instant::now()),
             ) {
                 info!("follow: refused — {key}");
                 errors.0.push(crate::ui_action::UiError::key(key));

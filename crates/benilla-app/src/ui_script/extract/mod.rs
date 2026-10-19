@@ -473,14 +473,14 @@ pub(super) fn tick_script(
     // Per frame: both halves' measure passes add to these, and only this zeroes them.
     ui_cost.measured = 0;
     ui_cost.measured_texts.clear();
-    let mut t_mark = cost_on.then(std::time::Instant::now);
+    let mut t_mark = cost_on.then(web_time::Instant::now);
     // μs since the previous mark, re-armed; nothing with the meter off.
     let mut lap = move || -> u128 {
         if !cost_on {
             return 0;
         }
         t_mark
-            .replace(std::time::Instant::now())
+            .replace(web_time::Instant::now())
             .map_or(0, |t| t.elapsed().as_micros())
     };
     {
@@ -495,7 +495,7 @@ pub(super) fn tick_script(
     // The VM's clock anchored at `Time<Real>`'s last update, whose deltas it accumulates; every
     // `Instant` to `GetTime` conversion goes through this pair, never `Instant::now()`.
     *ui_clock = super::UiClock {
-        anchor: time.last_update().unwrap_or_else(std::time::Instant::now),
+        anchor: time.last_update().unwrap_or_else(web_time::Instant::now),
         ui_now: script.now(),
     };
     let us_tick = lap();
@@ -618,13 +618,13 @@ pub(super) fn paint_script(
     let (solves_before, derives_before) = (Some(pass.solves_before), Some(pass.derives_before));
     let printing = ui_cost_enabled();
     let cost_on = printing || ui_cost_wanted.0;
-    let mut t_mark = cost_on.then(std::time::Instant::now);
+    let mut t_mark = cost_on.then(web_time::Instant::now);
     let mut lap = move || -> u128 {
         if !cost_on {
             return 0;
         }
         t_mark
-            .replace(std::time::Instant::now())
+            .replace(web_time::Instant::now())
             .map_or(0, |t| t.elapsed().as_micros())
     };
     // ── The second measure and resolve ───────────────────────────────────────────────────────

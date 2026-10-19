@@ -1,7 +1,7 @@
 //! The state every probe shares, the acks that keep any session alive, and the [`DeathArc`].
 
 use std::collections::{BTreeMap, HashMap};
-use std::time::Instant;
+use web_time::Instant;
 
 use anyhow::Result;
 use benilla_protocol::{

@@ -12,3 +12,7 @@ workspace = true
 num-bigint = "0.4.6"
 sha1.workspace = true
 rand = "0.8.6"
+
+# The browser's `crypto.getRandomValues` for `rand`'s OS source.
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+getrandom = { version = "0.2", features = ["js"] }

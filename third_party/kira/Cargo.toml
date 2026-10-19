@@ -188,5 +188,8 @@ version = "0.18.1"
 features = ["wasm-bindgen"]
 optional = true
 
+[target.'cfg(target_arch = "wasm32")'.dependencies.wasm_thread]
+version = "0.3"
+
 [target.'cfg(target_arch = "wasm32")'.dependencies.send_wrapper]
 version = "0.6.0"

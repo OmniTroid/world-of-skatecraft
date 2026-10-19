@@ -8,7 +8,7 @@
 
 use crate::ui_items::carried_counts;
 use std::collections::HashMap;
-use std::time::Instant;
+use web_time::Instant;
 
 use bevy::prelude::*;
 

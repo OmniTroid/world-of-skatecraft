@@ -5,6 +5,7 @@ pub mod auth;
 pub mod events;
 pub mod guid;
 pub mod messages;
+pub mod net;
 pub mod wire;
 pub mod world;
 pub use auth::AuthReject;
@@ -23,7 +24,7 @@ pub use world::{
     WardenRequired, WorldAuthReject, WorldReader, WorldSession, WorldWriter, WORLD_PORT,
 };
 
-use std::net::TcpStream;
+use net::TcpStream;
 
 use anyhow::{anyhow, Context, Result};
 use benilla_srp::{NormalizedString, PublicKey, SrpClientChallenge, SESSION_KEY_LENGTH};
@@ -72,31 +73,29 @@ impl std::error::Error for DialFailure {}
 /// Resolves, then tries every resolved address in turn: `localhost` gives `::1` first, and a
 /// server may bind only IPv4.
 fn dial(host: &str, port: u16) -> Result<TcpStream> {
-    use std::net::ToSocketAddrs;
     let address = format!("{host}:{port}");
-    let addrs: Vec<std::net::SocketAddr> = match (host, port).to_socket_addrs() {
-        Ok(addrs) => addrs.collect(),
-        Err(e) => {
-            return Err(anyhow::Error::new(DialFailure {
-                address,
-                unresolved: true,
-            })
-            .context(format!("resolving {host}: {e}")))
-        }
-    };
-    if addrs.is_empty() {
-        return Err(anyhow::Error::new(DialFailure {
-            address,
-            unresolved: true,
-        }));
-    }
-    TcpStream::connect(&addrs[..]).map_err(|e| {
+    let failed = |unresolved: bool| {
         anyhow::Error::new(DialFailure {
-            address,
-            unresolved: false,
+            address: address.clone(),
+            unresolved,
         })
-        .context(format!("connecting: {e}"))
-    })
+    };
+    // The page's bridge resolves nothing: the port picks the socket.
+    #[cfg(target_arch = "wasm32")]
+    return net::connect(&address).map_err(|e| failed(false).context(format!("connecting: {e}")));
+    #[cfg(not(target_arch = "wasm32"))]
+    {
+        use std::net::ToSocketAddrs;
+        let addrs: Vec<std::net::SocketAddr> = match (host, port).to_socket_addrs() {
+            Ok(addrs) => addrs.collect(),
+            Err(e) => return Err(failed(true).context(format!("resolving {host}: {e}"))),
+        };
+        if addrs.is_empty() {
+            return Err(failed(true));
+        }
+        TcpStream::connect(&addrs[..])
+            .map_err(|e| failed(false).context(format!("connecting: {e}")))
+    }
 }
 
 /// A realm from realmd's realm list, with every field the wire carries.

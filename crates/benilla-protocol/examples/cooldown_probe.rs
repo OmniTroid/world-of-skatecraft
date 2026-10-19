@@ -9,7 +9,8 @@
 //! probe account with a warrior (a login kicks whoever is on the account); `.learn` needs
 //! gmlevel 5 (`SEC_DEVELOPER`). It is a combat probe, so it never runs unattended.
 
-use std::time::{Duration, Instant};
+use std::time::Duration;
+use web_time::Instant;
 
 use anyhow::{Context, Result};
 use benilla_protocol::{decode, EntityKind, SessionEvent, WorldSession, WORLD_PORT};

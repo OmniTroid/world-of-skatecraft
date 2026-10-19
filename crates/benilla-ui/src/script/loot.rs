@@ -169,7 +169,7 @@ pub(super) fn install(lua: &Lua) -> mlua::Result<()> {
                     Value::Nil,
                     Value::String(lua.create_string(CACHE_MISS_NAME)?),
                     Value::Integer(0),
-                    Value::Integer(if cleared {
+                    crate::script::lua_int(if cleared {
                         CACHE_MISS_QUALITY
                     } else {
                         NO_SLOT_QUALITY
@@ -182,14 +182,14 @@ pub(super) fn install(lua: &Lua) -> mlua::Result<()> {
                 Value::String(lua.create_string(row.texture.as_deref().unwrap_or(MISSING_ICON))?);
             let item =
                 Value::String(lua.create_string(row.name.as_deref().unwrap_or(CACHE_MISS_NAME))?);
-            let quality = Value::Integer(row.quality.map_or(CACHE_MISS_QUALITY, i64::from));
+            let quality = crate::script::lua_int(row.quality.map_or(CACHE_MISS_QUALITY, i64::from));
             Ok(MultiValue::from_vec(vec![
                 texture,
                 item,
-                Value::Integer(i64::from(row.quantity)),
+                crate::script::lua_int(i64::from(row.quantity)),
                 quality,
                 // The item id, a fifth return that is not a 1.12 value.
-                Value::Integer(i64::from(row.item_id)),
+                crate::script::lua_int(i64::from(row.item_id)),
             ]))
         })?,
     )?;

@@ -1,7 +1,7 @@
 //! The pet action bar's feed: the ten packed words of the last `SMSG_PET_SPELLS`, which the
 //! server owns whole, rendered as ten `PetActionView`s each frame.
 
-use std::time::Instant;
+use web_time::Instant;
 
 use bevy::prelude::*;
 

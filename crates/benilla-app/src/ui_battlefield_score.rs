@@ -5,7 +5,8 @@
 //! name lands. `UPDATE_BATTLEFIELD_SCORE` fires on a pushed board and on the status-3 arrival,
 //! before `UPDATE_BATTLEFIELD_STATUS` (`0x4aaa5a` before `0x4aab05`).
 
-use std::time::{Duration, Instant};
+use std::time::Duration;
+use web_time::Instant;
 
 use bevy::prelude::*;
 

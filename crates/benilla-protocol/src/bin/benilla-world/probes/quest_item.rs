@@ -2,7 +2,8 @@
 //! `CMSG_QUESTGIVER_QUERY_QUEST` and the accept to the item's guid, never `CMSG_USE_ITEM`, which
 //! the server refuses with `EQUIP_ERR_ITEM_NOT_FOUND`.
 
-use std::time::{Duration, Instant};
+use std::time::Duration;
+use web_time::Instant;
 
 use anyhow::{Context, Result};
 use benilla_protocol::{decode, SessionEvent, WorldSession};

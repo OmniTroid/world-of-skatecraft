@@ -76,7 +76,7 @@ pub(super) struct ChatWindowFile {
     identity: VmMemo<Option<(String, String)>>,
     /// Whether this VM has unsaved Lua writes, per VM: a replaced VM's stock table must not save.
     dirty: VmMemo<bool>,
-    last_change: Option<std::time::Instant>,
+    last_change: Option<web_time::Instant>,
 }
 
 /// A parsed file: its windows (0-based), its `COLORS` rows in file order, its custom channels.
@@ -528,7 +528,7 @@ fn watch_chat_looks(script: Option<NonSendMut<UiScript>>, mut file: ResMut<ChatW
         return;
     }
     *file.dirty.get(&script) = true;
-    file.last_change = Some(std::time::Instant::now());
+    file.last_change = Some(web_time::Instant::now());
 }
 
 fn write(script: &UiScript, channels: &super::edit::ChannelState, path: &std::path::Path) {

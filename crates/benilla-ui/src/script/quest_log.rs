@@ -235,14 +235,14 @@ pub(super) fn install(lua: &Lua) -> mlua::Result<()> {
             };
             let complete = match e.complete {
                 0 => Value::Nil,
-                c => Value::Integer(i64::from(c.signum())),
+                c => crate::script::lua_int(i64::from(c.signum())),
             };
             // Returns 4 and 5 are 1 or nil, never booleans; `isCollapsed` is 1 only on a header
             // whose bit in `[0xbb748c]` is clear.
             let flag = |b: bool| if b { Value::Integer(1) } else { Value::Nil };
             Ok(MultiValue::from_vec(vec![
                 Value::String(lua.create_string(&e.title)?),
-                Value::Integer(i64::from(e.level)),
+                crate::script::lua_int(i64::from(e.level)),
                 tag,
                 flag(e.is_header),
                 flag(e.is_header && e.collapsed),
@@ -388,8 +388,8 @@ pub(super) fn install(lua: &Lua) -> mlua::Result<()> {
                 Ok(MultiValue::from_vec(vec![
                     Value::String(lua.create_string(&name)?),
                     texture,
-                    Value::Integer(i64::from(it.count)),
-                    Value::Integer(i64::from(it.quality)),
+                    crate::script::lua_int(i64::from(it.count)),
+                    crate::script::lua_int(i64::from(it.quality)),
                     crate::script::binding_abi::flag(it.usable),
                 ]))
             })?,
@@ -536,7 +536,7 @@ pub(super) fn install(lua: &Lua) -> mlua::Result<()> {
                     .entries
                     .iter()
                     .filter_map(|e| live_seconds_left(e, now))
-                    .map(Value::Integer)
+                    .map(crate::script::lua_int)
                     .collect(),
             ))
         })?,
@@ -560,7 +560,7 @@ pub(super) fn install(lua: &Lua) -> mlua::Result<()> {
                     .map(|(i, _)| i as i64 + 1)
             });
             Ok(match index {
-                Some(i) => Value::Integer(i),
+                Some(i) => crate::script::lua_int(i),
                 None => Value::Nil,
             })
         })?,
@@ -578,7 +578,7 @@ pub(super) fn install(lua: &Lua) -> mlua::Result<()> {
                 .and_then(|e| seconds_left(e, model.server_unix_time));
             Ok(match left {
                 // Clamped where the lists drop the row, as in the reference.
-                Some(s) => Value::Integer(s.max(0)),
+                Some(s) => crate::script::lua_int(s.max(0)),
                 None => Value::Nil,
             })
         })?,
@@ -705,7 +705,7 @@ pub(super) fn install(lua: &Lua) -> mlua::Result<()> {
                 })
                 .map(|p| p as i64 + 1);
             Ok(match index {
-                Some(i) => Value::Integer(i),
+                Some(i) => crate::script::lua_int(i),
                 None => Value::Nil,
             })
         })?,

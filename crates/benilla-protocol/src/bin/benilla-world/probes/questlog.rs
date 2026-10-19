@@ -1,7 +1,8 @@
 //! `--questlog`: accept quest 7 at McBride, query its template, GM-complete it and require the
 //! slot's complete bit, then abandon it and require the slot's id field to clear.
 
-use std::time::{Duration, Instant};
+use std::time::Duration;
+use web_time::Instant;
 
 use anyhow::{bail, Context, Result};
 use benilla_protocol::{decode, guid, EntityKind, SessionEvent};

@@ -1,7 +1,8 @@
 //! `--use-pack-slot`: `CMSG_USE_ITEM` on a 1-based backpack slot must draw a stack-count delta,
 //! a destroy of the item, or a cast-result refusal.
 
-use std::time::{Duration, Instant};
+use std::time::Duration;
+use web_time::Instant;
 
 use anyhow::{Context, Result};
 use benilla_protocol::{decode, SessionEvent};

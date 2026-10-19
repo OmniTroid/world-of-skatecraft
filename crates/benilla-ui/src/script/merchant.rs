@@ -213,9 +213,9 @@ pub(super) fn install(lua: &Lua) -> mlua::Result<()> {
             Ok(MultiValue::from_vec(vec![
                 name,
                 texture,
-                Value::Integer(i64::from(it.price)),
-                Value::Integer(i64::from(it.quantity)),
-                Value::Integer(i64::from(it.num_available)),
+                crate::script::lua_int(i64::from(it.price)),
+                crate::script::lua_int(i64::from(it.quantity)),
+                crate::script::lua_int(i64::from(it.num_available)),
                 usable_value(usable),
             ]))
         })?,
@@ -253,7 +253,7 @@ pub(super) fn install(lua: &Lua) -> mlua::Result<()> {
                 .as_ref()
                 .and_then(|m| index.checked_sub(1).and_then(|n| m.items.get(n)))
                 .and_then(|it| it.max_stack)
-                .map_or(Value::Nil, |n| Value::Integer(i64::from(n))))
+                .map_or(Value::Nil, |n| crate::script::lua_int(i64::from(n))))
         })?,
     )?;
 
@@ -379,9 +379,9 @@ pub(super) fn install(lua: &Lua) -> mlua::Result<()> {
             Ok(MultiValue::from_vec(vec![
                 name,
                 texture,
-                Value::Integer(i64::from(it.price)),
-                Value::Integer(i64::from(it.quantity)),
-                Value::Integer(i64::from(it.num_available)),
+                crate::script::lua_int(i64::from(it.price)),
+                crate::script::lua_int(i64::from(it.quantity)),
+                crate::script::lua_int(i64::from(it.num_available)),
                 usable_value(usable),
             ]))
         })?,
@@ -421,7 +421,7 @@ pub(super) fn install(lua: &Lua) -> mlua::Result<()> {
                 }
             };
             Ok(MultiValue::from_vec(vec![
-                Value::Integer(i64::from(cost)),
+                crate::script::lua_int(i64::from(cost)),
                 Value::Boolean(cost > 0),
             ]))
         })?,

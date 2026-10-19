@@ -432,11 +432,11 @@ pub(super) fn install(lua: &Lua) -> mlua::Result<()> {
                 Value::String(lua.create_string(format!(
                     "item:{item_id}:{enchant}:{random_property}:{suffix}"
                 ))?),
-                Value::Integer(i64::from(v.quality)),
-                Value::Integer(i64::from(v.required_level)),
+                crate::script::lua_int(i64::from(v.quality)),
+                crate::script::lua_int(i64::from(v.required_level)),
                 Value::String(lua.create_string(str_or_empty(&v.item_type))?),
                 Value::String(lua.create_string(str_or_empty(&v.item_sub_type))?),
-                Value::Integer(i64::from(v.stackable)),
+                crate::script::lua_int(i64::from(v.stackable)),
                 Value::String(lua.create_string(equip_loc_token(v.inventory_type))?),
                 // Deviation: nil for a display row with no icon, where the reference answers the
                 // unloadable `Interface\Icons\`, because `SetTexture` shows no icon for either.

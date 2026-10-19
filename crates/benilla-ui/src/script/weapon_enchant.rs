@@ -63,7 +63,7 @@ pub(super) fn install(lua: &Lua) -> mlua::Result<()> {
                             e.remaining_ms
                                 .map_or(Value::Nil, |ms| Value::Number(ms as f64)),
                         );
-                        out.push(Value::Integer(i64::from(e.charges)));
+                        out.push(crate::script::lua_int(i64::from(e.charges)));
                     }
                     None => out.extend([Value::Nil, Value::Nil, Value::Nil]),
                 }

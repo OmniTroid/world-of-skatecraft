@@ -399,7 +399,7 @@ pub(super) fn install(lua: &Lua) -> mlua::Result<()> {
             };
             Ok(MultiValue::from_vec(vec![
                 Value::String(lua.create_string(&name)?),
-                Value::Integer(visual_rank(rank)),
+                crate::script::lua_int(visual_rank(rank)),
             ]))
         })?,
     )?;
@@ -509,18 +509,18 @@ pub(super) fn install(lua: &Lua) -> mlua::Result<()> {
         lua.create_function(|lua, ()| {
             let d = inspect_honor(lua).unwrap_or_default();
             let out = vec![
-                Value::Integer(i64::from(d.session_hk)),
-                Value::Integer(i64::from(d.session_dk)),
-                Value::Integer(i64::from(d.yesterday_hk)),
-                Value::Integer(i64::from(d.yesterday_honor)),
-                Value::Integer(i64::from(d.this_week_hk)),
-                Value::Integer(i64::from(d.this_week_honor)),
-                Value::Integer(i64::from(d.last_week_hk)),
-                Value::Integer(i64::from(d.last_week_honor)),
-                Value::Integer(i64::from(d.last_week_standing)),
-                Value::Integer(i64::from(d.lifetime_hk)),
-                Value::Integer(i64::from(d.lifetime_dk)),
-                Value::Integer(i64::from(d.highest_rank)),
+                crate::script::lua_int(i64::from(d.session_hk)),
+                crate::script::lua_int(i64::from(d.session_dk)),
+                crate::script::lua_int(i64::from(d.yesterday_hk)),
+                crate::script::lua_int(i64::from(d.yesterday_honor)),
+                crate::script::lua_int(i64::from(d.this_week_hk)),
+                crate::script::lua_int(i64::from(d.this_week_honor)),
+                crate::script::lua_int(i64::from(d.last_week_hk)),
+                crate::script::lua_int(i64::from(d.last_week_honor)),
+                crate::script::lua_int(i64::from(d.last_week_standing)),
+                crate::script::lua_int(i64::from(d.lifetime_hk)),
+                crate::script::lua_int(i64::from(d.lifetime_dk)),
+                crate::script::lua_int(i64::from(d.highest_rank)),
             ];
             debug_assert_eq!(out.len(), 12, "the tuple is twelve wide on every path");
             Ok(MultiValue::from_vec(out))

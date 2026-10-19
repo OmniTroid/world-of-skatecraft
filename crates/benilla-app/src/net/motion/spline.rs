@@ -2,7 +2,8 @@
 //! that goes with it ([`ground_clamp_creatures`]).
 
 use std::sync::OnceLock;
-use std::time::{Duration, Instant};
+use std::time::Duration;
+use web_time::Instant;
 
 use benilla_assets::coords::{bevy_to_wow, wow_to_bevy};
 use benilla_protocol::{CreateSpline, EntityKind};
@@ -497,7 +498,7 @@ pub(in crate::net) fn ground_clamp_creatures(
 ) {
     let cost = clamp_cost_enabled();
     let legacy = clamp_seat_disabled();
-    let t0 = cost.then(std::time::Instant::now);
+    let t0 = cost.then(web_time::Instant::now);
     let (mut visited, mut skipped, mut held, mut cast, mut swept, mut hit_n, mut moved) =
         (0u32, 0u32, 0u32, 0u32, 0u32, 0u32, 0u32);
     // Walker-arm counters: `noflr` counts frames whose swept step found no floor (nonzero while the
@@ -1365,7 +1366,8 @@ mod swim_gate {
 /// that must not be; the trench floor is flat under the whole mid-path window.
 #[cfg(test)]
 mod server_moved_players {
-    use std::time::{Duration, Instant};
+    use std::time::Duration;
+    use web_time::Instant;
 
     use avian3d::prelude::*;
     use benilla_assets::coords::wow_to_bevy;
@@ -1698,7 +1700,8 @@ mod server_moved_players {
 /// walking, where every face is a backface; a walker on a hill; re-basing on a new path.
 #[cfg(test)]
 mod inside_a_hull {
-    use std::time::{Duration, Instant};
+    use std::time::Duration;
+    use web_time::Instant;
 
     use avian3d::prelude::*;
     use benilla_protocol::EntityKind;

@@ -179,12 +179,12 @@ pub(super) fn install(lua: &Lua) -> mlua::Result<()> {
             };
             Ok(MultiValue::from_vec(vec![
                 Value::String(lua.create_string(&r.name)?),
-                Value::Integer(i64::from(r.killing_blows)),
-                Value::Integer(i64::from(r.honorable_kills)),
-                Value::Integer(i64::from(r.deaths)),
-                Value::Integer(i64::from(r.honor_gained)),
-                Value::Integer(i64::from(r.faction)),
-                Value::Integer(i64::from(r.rank)),
+                crate::script::lua_int(i64::from(r.killing_blows)),
+                crate::script::lua_int(i64::from(r.honorable_kills)),
+                crate::script::lua_int(i64::from(r.deaths)),
+                crate::script::lua_int(i64::from(r.honor_gained)),
+                crate::script::lua_int(i64::from(r.faction)),
+                crate::script::lua_int(i64::from(r.rank)),
                 s(&r.race)?,
                 s(&r.class)?,
             ]))
@@ -197,7 +197,7 @@ pub(super) fn install(lua: &Lua) -> mlua::Result<()> {
             let model = lua.app_data_ref::<Model>().expect("model app_data");
             let b = &model.battlefield_board.scores;
             Ok(if b.ended {
-                Value::Integer(i64::from(b.winner))
+                crate::script::lua_int(i64::from(b.winner))
             } else {
                 Value::Nil
             })

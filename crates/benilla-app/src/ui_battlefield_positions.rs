@@ -7,7 +7,8 @@
 //! slot's map, answering `(0, 0)` off it. The app resolves the list that way each frame. A name
 //! landing fires `WORLD_MAP_NAME_UPDATE`, as in the reference.
 
-use std::time::{Duration, Instant};
+use std::time::Duration;
+use web_time::Instant;
 
 use bevy::prelude::*;
 

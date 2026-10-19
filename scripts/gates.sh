@@ -50,7 +50,7 @@ docs_only_delta() { # $1 = stamped tree, $2 = current tree
 key_start="$(tree_key || true)"
 if [ "${GATES_FORCE:-}" != "1" ] && [ -n "$key_start" ] && [ -f "$stamp" ]; then
     old="$(cat "$stamp" 2>/dev/null)"
-    old_key="${old%|*}" # tree|rustc|script — the part that must match (bar the tree, see below)
+    old_key="${old%|*}" # tree|rustc|script: the part that must match (bar the tree, see below)
     memo=""
     if [ "$old_key" = "$key_start" ]; then
         memo="this exact tree already passed"
@@ -58,10 +58,10 @@ if [ "${GATES_FORCE:-}" != "1" ] && [ -n "$key_start" ] && [ -f "$stamp" ]; then
         memo="this tree differs from one that passed only under docs/ or in top-level *.md, which no gate reads"
     fi
     if [ -n "$memo" ] && [ "${old##*|}" = "$(resolve_wow)$corpus" ]; then
-        echo "ALL GATES GREEN (memoized — $memo; GATES_FORCE=1 re-runs)"
+        echo "ALL GATES GREEN (memoized: $memo; GATES_FORCE=1 re-runs)"
         [ -d target ] && printf '%s\t%s\t%s\t%s\t%s\n' "$(date -u +%FT%TZ)" \
             "$(git rev-parse --short HEAD 2>/dev/null || echo '-')" chain 0 memo >>target/.gates-timing 2>/dev/null
-        echo "  (a clean run is the fourth gate: scripts/smoke.sh — live logout/re-login round trip)"
+        echo "  (a clean run is the fourth gate: scripts/smoke.sh, a live logout/re-login round trip)"
         exit 0
     fi
 fi
@@ -74,7 +74,7 @@ trap 'rm -f "$log" "$skips"' EXIT
 # skip to `$BENILLA_SKIP_LOG`; this prints them, grouped, after a test rung and empties the file.
 report_skips() { # $1 = rung name
     [ -s "$skips" ] || return 0
-    echo "  $1: $(wc -l <"$skips" | tr -d ' ') data-gated tests SKIPPED on this machine —"
+    echo "  $1: $(wc -l <"$skips" | tr -d ' ') data-gated tests SKIPPED on this machine:"
     sort "$skips" | uniq -c | sort -rn | sed 's/^ *\([0-9]*\) \(.*\)/    \1 × \2/'
     echo "    (they run where the data is: docs/CONTRIBUTING.md, \"Setting up\")"
     : >"$skips"
@@ -107,6 +107,9 @@ run() {
 
 run fmt cargo fmt --all -- --check
 run clippy cargo clippy --workspace --all-targets -- -D warnings
+# The crates the web build already compiles (docs/WEB.md); the list only grows.
+run wasm cargo check -p benilla-mpq -p benilla-srp -p benilla-protocol -p benilla-formats \
+    --target wasm32-unknown-unknown
 
 # test: where the install resolves and the `wow-addons-vanilla` corpus link exists,
 # BENILLA_REQUIRE_DATA=1 refuses a data-gated test that skips; with the install alone it would
@@ -116,7 +119,7 @@ require_data=""
 if [ -n "$wow_data" ] && [ -n "$corpus" ]; then
     require_data=1
 else
-    echo "gates: NOTE — install or addon corpus not found here (install='${wow_data:-none}'," \
+    echo "gates: NOTE: install or addon corpus not found here (install='${wow_data:-none}'," \
          "corpus=$([ -d "$root/wow-addons-vanilla" ] && echo yes || echo no)):" \
          "data-gated tests skip silently on this machine"
 fi
@@ -157,7 +160,7 @@ report_skips player-tests
 if cargo run -q -p benilla-formats --example where >/dev/null 2>&1; then
     run enforcer env WOW_WORLDVIEW_CHECK=10 cargo run -q -p benilla-worldview
 else
-    echo "gate SKIPPED: enforcer (no WoW install found — the engine boot check needs one;"
+    echo "gate SKIPPED: enforcer (no WoW install found; the engine boot check needs one;"
     echo "             \`cargo run -p benilla-formats --example where\` says where it looked)"
     note_timing enforcer 0 SKIPPED
 fi
@@ -178,4 +181,4 @@ if [ -n "$key_end" ] && [ "$key_end" = "$key_start" ] && [ -d target ]; then
 fi
 
 # The clean-run gate, scripts/smoke.sh, needs a server and a window: named here, not run.
-echo "  (a clean run is the fourth gate: scripts/smoke.sh — live logout/re-login round trip)"
+echo "  (a clean run is the fourth gate: scripts/smoke.sh, a live logout/re-login round trip)"

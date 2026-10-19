@@ -601,7 +601,7 @@ enum Phase {
     Idle,
     /// Audible, the position not yet moved off `pos`: the spin-up, not counted.
     Starting {
-        since: std::time::Instant,
+        since: web_time::Instant,
         pos: f64,
         warned: bool,
     },
@@ -609,7 +609,7 @@ enum Phase {
     /// the reported span are one interval.
     Running {
         last_pos: f64,
-        window_start: std::time::Instant,
+        window_start: web_time::Instant,
     },
 }
 
@@ -642,7 +642,7 @@ impl StreamWatch {
     pub(crate) fn feed(&mut self, handle: &StreamingSoundHandle<FromFileError>, dt: f64) {
         use kira::sound::PlaybackState as S;
         let audible = matches!(handle.state(), S::Playing | S::Stopping);
-        match self.observe(audible, handle.position(), dt, std::time::Instant::now()) {
+        match self.observe(audible, handle.position(), dt, web_time::Instant::now()) {
             Some(Verdict::Starved {
                 lost,
                 counted,
@@ -683,7 +683,7 @@ impl StreamWatch {
     }
 
     /// Open a counting window: position baseline and wall origin together.
-    fn begin(&mut self, pos: f64, now: std::time::Instant) {
+    fn begin(&mut self, pos: f64, now: web_time::Instant) {
         self.phase = Phase::Running {
             last_pos: pos,
             window_start: now,
@@ -697,7 +697,7 @@ impl StreamWatch {
         audible: bool,
         pos: f64,
         dt: f64,
-        now: std::time::Instant,
+        now: web_time::Instant,
     ) -> Option<Verdict> {
         // Stopped or paused: the position legitimately holds.
         if !audible {
@@ -1229,14 +1229,14 @@ pub(super) mod tests {
         );
     }
 
-    fn wall(t0: std::time::Instant, secs: f64) -> std::time::Instant {
+    fn wall(t0: web_time::Instant, secs: f64) -> web_time::Instant {
         t0 + std::time::Duration::from_secs_f64(secs)
     }
 
     #[test]
     fn stream_watch_accounts_freezes_not_swaps() {
         let dt = 1.0 / 60.0;
-        let t0 = std::time::Instant::now();
+        let t0 = web_time::Instant::now();
 
         let mut w = StreamWatch::new("test");
         let mut pos = 0.0;
@@ -1320,7 +1320,7 @@ pub(super) mod tests {
     #[test]
     fn stream_watch_spans_the_window_it_counted() {
         let dt = 1.0 / 60.0;
-        let t0 = std::time::Instant::now();
+        let t0 = web_time::Instant::now();
         let hitch = 0.298;
         let mut w = StreamWatch::new("test");
 
@@ -1369,7 +1369,7 @@ pub(super) mod tests {
     #[test]
     fn stream_watch_does_not_charge_a_stream_for_starting() {
         let dt = 1.0 / 60.0;
-        let t0 = std::time::Instant::now();
+        let t0 = web_time::Instant::now();
         let hitch = 0.298;
         let first_sample = 0.233;
         // Position as the handle reports it: 0 until the first sample, then wall time.
@@ -1417,7 +1417,7 @@ pub(super) mod tests {
     #[test]
     fn stream_watch_names_a_stream_that_never_starts() {
         let dt = 1.0 / 60.0;
-        let t0 = std::time::Instant::now();
+        let t0 = web_time::Instant::now();
         let mut w = StreamWatch::new("test");
         let mut waited = Vec::new();
         for i in 0..600 {
@@ -1584,9 +1584,9 @@ pub(super) mod tests {
             r.process(&mut out, 2);
             out.iter().step_by(2).copied().collect()
         };
-        let deadline = std::time::Instant::now() + std::time::Duration::from_secs(5);
+        let deadline = web_time::Instant::now() + std::time::Duration::from_secs(5);
         let mut lead = render(1);
-        while lead[0] == 0.0 && std::time::Instant::now() < deadline {
+        while lead[0] == 0.0 && web_time::Instant::now() < deadline {
             std::thread::sleep(std::time::Duration::from_millis(20));
             lead = render(1);
         }
@@ -1687,10 +1687,10 @@ pub(super) mod tests {
         manager: &mut AudioManager<kira::backend::mock::MockBackend>,
         h: &StreamingSoundHandle<FromFileError>,
     ) -> bool {
-        let deadline = std::time::Instant::now() + std::time::Duration::from_secs(5);
+        let deadline = web_time::Instant::now() + std::time::Duration::from_secs(5);
         let backend = manager.backend_mut();
         while h.state() != kira::sound::PlaybackState::Stopped
-            && std::time::Instant::now() < deadline
+            && web_time::Instant::now() < deadline
         {
             backend.on_start_processing();
             backend.process();

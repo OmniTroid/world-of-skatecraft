@@ -1133,7 +1133,8 @@ mod tests {
     use kira::sound::streaming::StreamingSoundData;
     use kira::sound::{FromFileError, PlaybackState};
     use std::sync::{mpsc, Arc, Mutex};
-    use std::time::{Duration, Instant};
+    use std::time::Duration;
+    use web_time::Instant;
 
     /// A kit of `files`, of which only the `present` ones open, picked uniformly per attempt as
     /// the reference's weighted pick does: every attempt is logged in `tried`.

@@ -61,7 +61,7 @@ pub(super) fn install(lua: &Lua) -> mlua::Result<()> {
             let model = lua.app_data_ref::<Model>().expect("model app_data");
             let mut out = Vec::with_capacity(model.gm_ticket_categories.len() * 2);
             for (id, name) in &model.gm_ticket_categories {
-                out.push(Value::Integer(i64::from(*id)));
+                out.push(crate::script::lua_int(i64::from(*id)));
                 out.push(Value::String(lua.create_string(name)?));
             }
             Ok(MultiValue::from_vec(out))

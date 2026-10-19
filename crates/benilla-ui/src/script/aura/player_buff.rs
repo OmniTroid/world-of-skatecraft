@@ -116,8 +116,8 @@ pub(super) fn install(lua: &Lua) -> mlua::Result<()> {
                 None => (-1, 0),
             };
             Ok(MultiValue::from_vec(vec![
-                Value::Integer(pos),
-                Value::Integer(until_cancelled),
+                crate::script::lua_int(pos),
+                crate::script::lua_int(until_cancelled),
             ]))
         })?,
     )?;

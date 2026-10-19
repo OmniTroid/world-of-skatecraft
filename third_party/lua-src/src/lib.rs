@@ -197,6 +197,31 @@ impl Build {
                 config.flag("-mllvm").flag("-wasm-enable-sjlj");
                 libs.push("setjmp".to_string());
             }
+            _ if target == "wasm32-unknown-unknown" => {
+                // The web build: the C is built as wasip1 against wasi-sdk's sysroot, whose libc
+                // and setjmp link into the wasm-bindgen module.
+                let sysroot = env::var("WASI_SYSROOT").map_err(|_| "WASI_SYSROOT is not set")?;
+                // A threaded build links into shared memory, so the C and its libc need atomics.
+                let threads = env::var("CARGO_CFG_TARGET_FEATURE")
+                    .is_ok_and(|f| f.split(',').any(|f| f == "atomics"));
+                let wasi = if threads {
+                    "wasm32-wasip1-threads"
+                } else {
+                    "wasm32-wasip1"
+                };
+                config
+                    .flag(format!("--target={wasi}"))
+                    .flag(format!("--sysroot={sysroot}"));
+                config.define("LUA_USE_POSIX", None);
+                config.define("_WASI_EMULATED_SIGNAL", None);
+                config.flag("-mllvm").flag("-wasm-enable-eh");
+                config.flag("-mllvm").flag("-wasm-use-legacy-eh=false");
+                config.flag("-mllvm").flag("-wasm-enable-sjlj");
+                println!("cargo:rustc-link-search=native={sysroot}/lib/{wasi}");
+                for lib in ["setjmp", "wasi-emulated-signal", "c"] {
+                    println!("cargo:rustc-link-lib=static={lib}");
+                }
+            }
             _ => Err(format!("don't know how to build Lua for {target}"))?,
         }
 

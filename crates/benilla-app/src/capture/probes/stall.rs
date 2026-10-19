@@ -13,7 +13,7 @@
 //! `virt_dt`, after the frame pacer and the 250 ms `max_delta` clamp (`clamped=1`).
 
 use core::time::Duration;
-use std::time::Instant;
+use web_time::Instant;
 
 use bevy::prelude::*;
 use bevy::time::Virtual;

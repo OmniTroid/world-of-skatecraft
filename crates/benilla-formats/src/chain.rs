@@ -67,16 +67,9 @@ impl Chain {
     /// missing files far downstream.
     pub fn open(path: &Path) -> Result<Self> {
         let mut archives = Vec::new();
-        if path.is_dir() {
-            let mut names: Vec<String> = std::fs::read_dir(path)
-                .with_context(|| format!("listing {}", path.display()))?
-                .filter_map(|entry| {
-                    let entry = entry.ok()?;
-                    // `path().is_file()` follows symlinks (`read_dir`'s file_type doesn't).
-                    entry.path().is_file().then(|| entry.file_name())
-                })
-                .filter_map(|name| name.into_string().ok())
-                .collect();
+        if benilla_mpq::fs::is_dir(path) {
+            let mut names = benilla_mpq::fs::list_files(path)
+                .with_context(|| format!("listing {}", path.display()))?;
             // read_dir order is arbitrary; sort so case-variant ties resolve deterministically.
             names.sort();
             for name in mount_order(&names) {

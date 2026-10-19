@@ -20,7 +20,7 @@
 //! ([`Cvars::own_for_session`]).
 
 use std::collections::{BTreeMap, HashMap, HashSet};
-use std::time::Instant;
+use web_time::Instant;
 
 use bevy::prelude::*;
 

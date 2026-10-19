@@ -1,7 +1,8 @@
 //! `--giverstatus`: the questgiver status wire behind the overhead `!`/`?` markers.
 //! `CMSG_QUESTGIVER_STATUS_QUERY` on Marshal McBride must draw an `SMSG_QUESTGIVER_STATUS`.
 
-use std::time::{Duration, Instant};
+use std::time::Duration;
+use web_time::Instant;
 
 use anyhow::{Context, Result};
 use benilla_protocol::{decode, guid, EntityKind, SessionEvent};

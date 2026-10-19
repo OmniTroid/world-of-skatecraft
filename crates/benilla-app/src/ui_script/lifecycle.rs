@@ -60,7 +60,7 @@ fn seed_vm_clock(world: &mut World, script: &mut UiScript) {
     script.set_now(elapsed);
     if let Some(mut clock) = world.get_resource_mut::<UiClock>() {
         *clock = UiClock {
-            anchor: anchor.unwrap_or_else(std::time::Instant::now),
+            anchor: anchor.unwrap_or_else(web_time::Instant::now),
             ui_now: elapsed,
         };
     }
@@ -214,7 +214,7 @@ pub(crate) fn run_pending_entry_load(world: &mut World) {
         return;
     }
     world.remove_resource::<PendingEntryUiLoad>();
-    let start = std::time::Instant::now();
+    let start = web_time::Instant::now();
     load_ingame_ui_on_world_entry(world);
     // The world entry's own step after the UI load, which a `ReloadUI()` never takes.
     crate::vplates::clear_at_world_entry(world);
@@ -893,7 +893,8 @@ mod tests {
     /// `CooldownFrame_SetTimer` hides a cooldown whose start is not above 0.
     #[test]
     fn a_rebuilt_vm_inherits_the_running_gettime_clock() {
-        use std::time::{Duration, Instant};
+        use std::time::Duration;
+        use web_time::Instant;
 
         let mut world = World::new();
         world.init_resource::<UiClock>();

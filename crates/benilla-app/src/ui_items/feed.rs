@@ -599,7 +599,7 @@ fn resolve_slot(
     names: &crate::names::NameCache,
     // Mutable: reading a charter's record is what queries it.
     petitions: &mut crate::ui_petition::PetitionState,
-    now: std::time::Instant,
+    now: web_time::Instant,
     ui_now: f64,
     // The class's `ChrClasses.dbc` relic flag, which decides slot 17 for every fit-rule read.
     has_relic_slot: bool,
@@ -875,7 +875,7 @@ pub(crate) fn feed_containers(
     // `WOW_FEED_COST=1` prints the body's mean cost every 60 runs.
     let cost_t0 = std::env::var_os("WOW_FEED_COST")
         .is_some()
-        .then(std::time::Instant::now);
+        .then(web_time::Instant::now);
     // One clock pair for every slot, so a running cooldown's pushed start is frame-stable.
     let (now, ui_now) = (clock.anchor, clock.ui_now);
     let spell_catalog = spells.as_deref().map(|s| &s.catalog);

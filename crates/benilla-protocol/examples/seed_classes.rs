@@ -29,7 +29,8 @@
 //! `.character premade savegear <name>` re-reads them (`LoadPlayerPremadeTemplates`), so
 //! `--reload-templates` saves an inert `zz-seed-reload` template before the first dressing.
 
-use std::time::{Duration, Instant};
+use std::time::Duration;
+use web_time::Instant;
 
 use anyhow::{bail, Context, Result};
 use benilla_protocol::{logon, messages, ServerPacket, WorldSession, WORLD_PORT};

@@ -828,7 +828,7 @@ pub(super) fn install(lua: &Lua) -> mlua::Result<()> {
         "GetInventoryItemQuality",
         lua.create_function(|lua, (token, slot): (Option<String>, i64)| {
             match player_inv_slot(lua, &token, slot) {
-                Some(v) if v.item_id != 0 => Ok(Value::Integer(i64::from(v.quality))),
+                Some(v) if v.item_id != 0 => Ok(crate::script::lua_int(i64::from(v.quality))),
                 _ => Ok(Value::Nil),
             }
         })?,

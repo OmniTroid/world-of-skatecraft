@@ -2,7 +2,8 @@
 //! the corpse, then `CMSG_LOOT`, stores every row, takes the money and releases, printing every
 //! loot packet.
 
-use std::time::{Duration, Instant};
+use std::time::Duration;
+use web_time::Instant;
 
 use anyhow::{bail, Context, Result};
 use benilla_protocol::{decode, guid, EntityKind, SessionEvent};

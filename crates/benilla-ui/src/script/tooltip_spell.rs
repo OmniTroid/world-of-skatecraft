@@ -672,7 +672,7 @@ pub(super) fn install_methods(lua: &Lua, m: &Table) -> mlua::Result<()> {
             // aura, where an `i64` would raise.
             lua.create_function(move |lua, (this, token, index): (Table, String, Value)| {
                 let index = match &index {
-                    Value::Integer(i) => *i,
+                    Value::Integer(i) => crate::script::int_of(*i),
                     Value::Number(n) => *n as i64,
                     Value::String(s) => s
                         .to_str()

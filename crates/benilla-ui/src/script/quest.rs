@@ -319,8 +319,8 @@ pub(super) fn install(lua: &Lua) -> mlua::Result<()> {
                     Some(t) => Value::String(lua.create_string(&t)?),
                     None => Value::Nil,
                 },
-                Value::Integer(i64::from(count)),
-                Value::Integer(i64::from(quality)),
+                crate::script::lua_int(i64::from(count)),
+                crate::script::lua_int(i64::from(quality)),
                 super::binding_abi::flag(usable),
             ]))
         })?,

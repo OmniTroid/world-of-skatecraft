@@ -16,7 +16,8 @@
 //! `0x4b5390` and `0x4b54c0`); the ones this app can produce reach here through
 //! [`TutorialEvent`] or the self-descriptor edges below.
 
-use std::time::{Duration, Instant};
+use std::time::Duration;
+use web_time::Instant;
 
 use bevy::prelude::*;
 

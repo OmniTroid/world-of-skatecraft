@@ -382,8 +382,8 @@ pub(super) fn install(lua: &Lua) -> mlua::Result<()> {
             Ok(MultiValue::from_vec(vec![
                 Value::String(lua.create_string(&tab.name)?),
                 texture,
-                Value::Integer(i64::from(tab.offset)),
-                Value::Integer(i64::from(tab.num_spells)),
+                crate::script::lua_int(i64::from(tab.offset)),
+                crate::script::lua_int(i64::from(tab.num_spells)),
             ]))
         })?,
     )?;
@@ -519,7 +519,10 @@ pub(super) fn install(lua: &Lua) -> mlua::Result<()> {
                 Some(t) => Value::String(lua.create_string(t)?),
                 None => Value::String(lua.create_string(PET_TOKEN_FALLBACK)?),
             };
-            Ok(MultiValue::from_vec(vec![Value::Integer(n as i64), token]))
+            Ok(MultiValue::from_vec(vec![
+                crate::script::lua_int(n as i64),
+                token,
+            ]))
         })?,
     )?;
 

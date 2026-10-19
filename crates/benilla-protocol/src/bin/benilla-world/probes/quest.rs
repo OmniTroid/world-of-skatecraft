@@ -1,7 +1,8 @@
 //! `--quest`: accepts and turns in a real quest over the whole questgiver wire (details, accept,
 //! complete, reward, quest-complete), checked against `PLAYER_QUEST_LOG` and `PLAYER_XP`.
 
-use std::time::{Duration, Instant};
+use std::time::Duration;
+use web_time::Instant;
 
 use anyhow::{Context, Result};
 use benilla_protocol::{decode, guid, EntityKind, SessionEvent, WorldSession};

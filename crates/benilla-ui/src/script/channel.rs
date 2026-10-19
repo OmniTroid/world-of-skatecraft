@@ -236,7 +236,7 @@ pub(super) fn install(lua: &Lua) -> mlua::Result<()> {
                 // confirmed slot; `joined` holds only those, so the bound is the whole check.
                 Value::Integer(_) | Value::Number(_) => {
                     let n = match &key {
-                        Value::Integer(i) => *i,
+                        Value::Integer(i) => crate::script::int_of(*i),
                         Value::Number(n) => *n as i64,
                         _ => unreachable!(),
                     };
@@ -268,7 +268,7 @@ pub(super) fn install(lua: &Lua) -> mlua::Result<()> {
             };
             let name = name_at(&model, slot).unwrap_or_default().to_string();
             Ok(MultiValue::from_vec(vec![
-                Value::Integer(slot as i64),
+                crate::script::lua_int(slot as i64),
                 Value::String(lua.create_string(&name)?),
                 // `instanceID`: `YOU_JOINED`'s split index, 0 on vanilla servers; never nil.
                 Value::Integer(0),
@@ -289,7 +289,7 @@ pub(super) fn install(lua: &Lua) -> mlua::Result<()> {
                 let Some(name) = name.as_deref() else {
                     continue;
                 };
-                out.push(Value::Integer(i as i64 + 1));
+                out.push(crate::script::lua_int(i as i64 + 1));
                 out.push(Value::String(lua.create_string(name)?));
             }
             Ok(MultiValue::from_vec(out))
@@ -353,7 +353,7 @@ pub(super) fn install(lua: &Lua) -> mlua::Result<()> {
                     },
                 );
                 Ok(MultiValue::from_vec(vec![
-                    Value::Integer(i64::from(id)),
+                    crate::script::lua_int(i64::from(id)),
                     match resolved {
                         Some(r) => Value::String(lua.create_string(&r)?),
                         None => Value::Nil,

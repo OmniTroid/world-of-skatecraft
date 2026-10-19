@@ -207,8 +207,8 @@ pub(super) fn install(lua: &Lua) -> mlua::Result<()> {
             };
             Ok(MultiValue::from_vec(vec![
                 opt_str(lua, name.as_ref())?,
-                Value::Integer(i64::from(rank)),
-                Value::Integer(i64::from(max_rank)),
+                crate::script::lua_int(i64::from(rank)),
+                crate::script::lua_int(i64::from(max_rank)),
             ]))
         })?,
     )?;
@@ -285,7 +285,7 @@ pub(super) fn install(lua: &Lua) -> mlua::Result<()> {
                 Value::String(lua.create_string(&r.name)?),
                 Value::String(lua.create_string(&r.sub_name)?),
                 Value::String(lua.create_string(r.difficulty.as_str())?),
-                Value::Integer(i64::from(r.num_available)),
+                crate::script::lua_int(i64::from(r.num_available)),
                 Value::Nil,
                 Value::Integer(0),
                 Value::Integer(0),
@@ -337,8 +337,8 @@ pub(super) fn install(lua: &Lua) -> mlua::Result<()> {
             Ok(MultiValue::from_vec(vec![
                 opt_str(lua, reagent.name.as_ref())?,
                 opt_str(lua, reagent.icon.as_ref())?,
-                Value::Integer(i64::from(reagent.need)),
-                Value::Integer(i64::from(reagent.have)),
+                crate::script::lua_int(i64::from(reagent.need)),
+                crate::script::lua_int(i64::from(reagent.have)),
             ]))
         })?,
     )?;
