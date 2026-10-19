@@ -32,6 +32,11 @@ s = s.replace('from "wasi_snapshot_preview1"', 'from "./wasi.js"')
 s, n = re.subn(r"memory: memory \|\| (new WebAssembly\.Memory\([^)]*\))",
                r"memory: (globalThis.__benillaMemory = memory || \1)", s)
 assert n == 1, "the shared memory's creation moved"
+# Workers get 32 MiB stacks, the skate engine's; wasm-bindgen's default is 2 MiB.
+s, n = re.subn(r"wasm\.__wbindgen_start\(thread_stack_size\);",
+               "if (thread_stack_size === undefined && typeof WorkerGlobalScope !== 'undefined') "
+               "thread_stack_size = 32 << 20;\n    wasm.__wbindgen_start(thread_stack_size);", s)
+assert n == 1, "the thread start moved"
 open(p, "w").write(s)
 PY
 cp web/index.html web/wasi.js web/audio-worklet.js web/dist/

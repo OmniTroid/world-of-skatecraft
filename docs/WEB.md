@@ -33,12 +33,14 @@ server, or your own WoW folder (Chromium only). `?data=server` or `?data=local` 
   first click. The page's `__benillaAudio` counts underrun quanta.
 - **Forks**: `third_party/crossbeam-channel` uses `web_time::Instant` (std's panics on the web);
   `third_party/kira` decodes streams on a worker. Each has a `BENILLA.md`.
+- **Skate**: the engine runs on a worker with 32 MiB stacks, reads `skate-data/` and
+  `skate-audio/` from the page's server, and takes the pad from the Gamepad API.
 - **Shaders**: WebGPU rejects implicit-LOD sampling in non-uniform control flow, which naga allows,
   so `terrain.wgsl` and `static_gx.wgsl` sample before branching.
 
 ## Not yet
 
-- The skate mode and the clipboard.
+- The clipboard.
 - Settings and saved variables: `benilla-config/` writes fail, so nothing persists.
 - Pipelines compile on first use, so new scenes hitch; asset parsing runs on the main thread.
 - A main-thread lock contended by a worker traps (`Atomics.wait` is refused there); none is seen yet.

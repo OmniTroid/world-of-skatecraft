@@ -110,10 +110,15 @@ fn audio_root() -> Option<PathBuf> {
     std::env::var_os("WOW_SKATE_AUDIO")
         .map(PathBuf::from)
         .or_else(|| {
-            ["skate-audio", "../skate-audio"]
-                .into_iter()
+            let candidates: &[&str] = if cfg!(target_arch = "wasm32") {
+                &["/skate-audio"]
+            } else {
+                &["skate-audio", "../skate-audio"]
+            };
+            candidates
+                .iter()
                 .map(PathBuf::from)
-                .find(|p| p.join("pop_1.wav").is_file())
+                .find(|p| super::fs::is_file(&p.join("pop_1.wav")))
         })
 }
 
@@ -135,7 +140,10 @@ struct Bank {
 impl Bank {
     fn load() -> Option<Self> {
         let root = audio_root()?;
-        let one = |name: &str| StaticSoundData::from_file(root.join(format!("{name}.wav"))).ok();
+        let one = |name: &str| {
+            let bytes = super::fs::read(&root.join(format!("{name}.wav"))).ok()?;
+            StaticSoundData::from_cursor(std::io::Cursor::new(bytes)).ok()
+        };
         let set = |prefix: &str| -> Vec<StaticSoundData> {
             (1..).map_while(|i| one(&format!("{prefix}_{i}"))).collect()
         };

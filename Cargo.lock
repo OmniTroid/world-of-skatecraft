@@ -520,6 +520,7 @@ dependencies = [
  "avian3d",
  "benilla-assets",
  "benilla-formats",
+ "benilla-mpq",
  "benilla-protocol",
  "benilla-srp",
  "benilla-ui",
@@ -6917,24 +6918,27 @@ checksum = "e3a9fe34e3e7a50316060351f37187a3f546bce95496156754b601a5fa71b76e"
 [[package]]
 name = "skate-core"
 version = "0.1.0"
-source = "git+https://github.com/Kimmo3223/2010-rust-rewrite-mashup?rev=099b1948e9c08394b20c760ef123da38ef347278#099b1948e9c08394b20c760ef123da38ef347278"
+source = "git+https://github.com/Kimmo3223/2010-rust-rewrite-mashup?rev=166c219e2569e9bfd1b9e0d4583fb28115be4e7f#166c219e2569e9bfd1b9e0d4583fb28115be4e7f"
 
 [[package]]
 name = "skate-data"
 version = "0.1.0"
-source = "git+https://github.com/Kimmo3223/2010-rust-rewrite-mashup?rev=099b1948e9c08394b20c760ef123da38ef347278#099b1948e9c08394b20c760ef123da38ef347278"
+source = "git+https://github.com/Kimmo3223/2010-rust-rewrite-mashup?rev=166c219e2569e9bfd1b9e0d4583fb28115be4e7f#166c219e2569e9bfd1b9e0d4583fb28115be4e7f"
 dependencies = [
  "flate2",
+ "js-sys",
  "serde",
  "serde_json",
  "skate-core",
+ "wasm-bindgen",
+ "web-time",
  "zstd",
 ]
 
 [[package]]
 name = "skate-host"
 version = "0.1.0"
-source = "git+https://github.com/Kimmo3223/2010-rust-rewrite-mashup?rev=099b1948e9c08394b20c760ef123da38ef347278#099b1948e9c08394b20c760ef123da38ef347278"
+source = "git+https://github.com/Kimmo3223/2010-rust-rewrite-mashup?rev=166c219e2569e9bfd1b9e0d4583fb28115be4e7f#166c219e2569e9bfd1b9e0d4583fb28115be4e7f"
 dependencies = [
  "bevy 0.19.1",
  "half",
@@ -6943,12 +6947,15 @@ dependencies = [
  "skate-core",
  "skate-data",
  "skate-net",
+ "wasm-bindgen",
+ "web-sys",
+ "web-time",
 ]
 
 [[package]]
 name = "skate-net"
 version = "0.1.0"
-source = "git+https://github.com/Kimmo3223/2010-rust-rewrite-mashup?rev=099b1948e9c08394b20c760ef123da38ef347278#099b1948e9c08394b20c760ef123da38ef347278"
+source = "git+https://github.com/Kimmo3223/2010-rust-rewrite-mashup?rev=166c219e2569e9bfd1b9e0d4583fb28115be4e7f#166c219e2569e9bfd1b9e0d4583fb28115be4e7f"
 dependencies = [
  "blake3",
  "half",

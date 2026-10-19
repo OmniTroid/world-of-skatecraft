@@ -68,7 +68,9 @@ rand = "0.8"
 serde_json = "1"
 # Skate 3 mode: the skate engine, fetched from Chasm's 2010 Rust Rewrite Mashup (Kimmo3223's
 # branch adds Linux controller input); not part of this repository. See NOTICE.
-skate-host = { git = "https://github.com/Kimmo3223/2010-rust-rewrite-mashup", rev = "099b1948e9c08394b20c760ef123da38ef347278" }
+skate-host = { git = "https://github.com/Kimmo3223/2010-rust-rewrite-mashup", rev = "166c219e2569e9bfd1b9e0d4583fb28115be4e7f" }
+# The skate mode's files on the web (`skate::fs`).
+benilla-mpq = { path = "../benilla-mpq" }
 
 # Wayland clipboard over the standard `wl_data_device`; arboard's speaks `wlr-data-control`,
 # which GNOME does not implement.

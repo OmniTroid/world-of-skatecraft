@@ -14,7 +14,9 @@ const TEXTURE_LIMIT: u32 = 512;
 
 /// Writes the two files unless both are already present.
 pub(super) fn ensure(assets: &Path) -> Result<(), String> {
-    if assets.join("rig.json").is_file() && assets.join("board.json").is_file() {
+    if super::fs::is_file(&assets.join("rig.json"))
+        && super::fs::is_file(&assets.join("board.json"))
+    {
         return Ok(());
     }
     export(assets)

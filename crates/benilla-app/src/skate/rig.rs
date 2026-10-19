@@ -29,7 +29,7 @@ pub(super) fn reference() -> Option<&'static [ReferenceBone]> {
         super::export::ensure(&root)
             .map_err(|e| warn!("skate export: {e}"))
             .ok()?;
-        let data = std::fs::read(root.join("rig.json")).ok()?;
+        let data = super::fs::read(&root.join("rig.json")).ok()?;
         serde_json::from_slice(&data)
             .map_err(|e| warn!("skate rig.json: {e}"))
             .ok()

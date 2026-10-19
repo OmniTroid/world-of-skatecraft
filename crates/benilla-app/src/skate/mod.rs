@@ -6,6 +6,7 @@
 
 mod board;
 mod export;
+mod fs;
 mod profession;
 mod rails;
 mod rig;
@@ -13,7 +14,12 @@ mod score;
 mod sound;
 
 use std::path::{Path, PathBuf};
+#[cfg(not(target_arch = "wasm32"))]
+use std::thread;
+// The web build's threads are web workers.
 use std::sync::{mpsc, Mutex};
+#[cfg(target_arch = "wasm32")]
+use wasm_thread as thread;
 
 use benilla_world::collision::WorldCollision;
 use benilla_world::schedule::WorldStage;
@@ -55,10 +61,16 @@ pub(crate) fn assets_root() -> Option<PathBuf> {
         std::env::var_os("WOW_SKATE_ASSETS")
             .map(PathBuf::from)
             .or_else(|| {
-                ["skate-data/assets", "../skate-data/assets"]
-                    .into_iter()
+                // The web build's are the page server's.
+                let candidates: &[&str] = if cfg!(target_arch = "wasm32") {
+                    &["/skate/assets"]
+                } else {
+                    &["skate-data/assets", "../skate-data/assets"]
+                };
+                candidates
+                    .iter()
                     .map(PathBuf::from)
-                    .find(|p| p.join("rig.json").is_file())
+                    .find(|p| fs::is_file(&p.join("rig.json")))
             })
     })
     .clone()
@@ -233,7 +245,7 @@ fn find_rails(tris: &[Tri]) -> Vec<Vec<[f32; 3]>> {
 fn spawn_worker(root: PathBuf) -> std::io::Result<(mpsc::Sender<Job>, mpsc::Receiver<Reply>)> {
     let (send, jobs) = mpsc::channel();
     let (publish, replies) = mpsc::channel();
-    std::thread::Builder::new()
+    thread::Builder::new()
         .name("skate".into())
         .stack_size(32 * 1024 * 1024)
         .spawn(move || {
@@ -267,7 +279,7 @@ fn run_worker(
             } => {
                 epoch = e;
                 accumulated = 0.0;
-                let start = std::time::Instant::now();
+                let start = web_time::Instant::now();
                 let rails = find_rails(&triangles);
                 let s = match session.as_mut() {
                     Some(s) => {
@@ -283,7 +295,7 @@ fn run_worker(
                         let builder = s.collision_builder();
                         let (tx, rx) = mpsc::channel::<(u64, Vec<Tri>)>();
                         let built_send = built_send.clone();
-                        std::thread::Builder::new()
+                        thread::Builder::new()
                             .name("skate-collision".into())
                             .stack_size(32 * 1024 * 1024)
                             .spawn(move || {
@@ -456,14 +468,14 @@ fn preload() {
         info!("skate: no skate-data/assets (set WOW_SKATE_ASSETS); J is off");
         return;
     };
-    let _ = std::thread::Builder::new()
+    let _ = thread::Builder::new()
         .name("skate-preload".into())
         .stack_size(32 * 1024 * 1024)
         .spawn(move || {
             if let Err(e) = export::ensure(&root) {
                 warn!("skate: cannot derive rig.json/board.json: {e}");
             }
-            let start = std::time::Instant::now();
+            let start = web_time::Instant::now();
             match Session::preload(&root) {
                 Ok(()) => info!(
                     "skate: animation banks preloaded in {} ms",

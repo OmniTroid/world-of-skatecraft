@@ -10,6 +10,8 @@ services:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
       - ./dist:/srv/web:ro
       - ${WOW_DIR:-../WoW}/Data:/srv/wow/Data:ro
+      - ../skate-data:/srv/skate:ro
+      - ../skate-audio:/srv/skate-audio:ro
     depends_on: [bridge]
   bridge:
     image: python:3.13-alpine

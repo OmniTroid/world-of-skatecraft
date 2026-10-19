@@ -55,7 +55,7 @@ fn model() -> Option<&'static Model> {
             super::export::ensure(&root)
                 .map_err(|e| warn!("skate export: {e}"))
                 .ok()?;
-            let data = std::fs::read(root.join("board.json")).ok()?;
+            let data = super::fs::read(&root.join("board.json")).ok()?;
             serde_json::from_slice(&data)
                 .map_err(|e| warn!("skate board.json: {e}"))
                 .ok()
